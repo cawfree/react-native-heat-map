@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Canvas;  
 import android.graphics.Bitmap;  
 import android.graphics.LinearGradient;  
+import android.graphics.RadialGradient;  
 import android.graphics.Color;  
 import android.graphics.Paint;  
 import android.graphics.PorterDuff;
@@ -63,7 +64,7 @@ public class HeatMap extends View {
   } 
 
   /* Static Declarations. */
-  private static final float              DEFAULT_BLUR        = 15f;
+  private static final float              DEFAULT_BLUR        = 30f;
   private static final float              DEFAULT_MAX         = 1f;
   private static final float              DEFAULT_RADIUS      = 25f;
   private static final float              DEFAULT_MIN_OPACITY = 0.05f;
@@ -82,25 +83,62 @@ public class HeatMap extends View {
     final float       lRadius = pRadius + pBlur;
     final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(lRadius) * 2, Math.round(lRadius) * 2, Bitmap.Config.ARGB_8888);
     final Canvas      lCanvas = new Canvas(lBitmap);
+    //final Paint lPaint = new Paint();
+    //// Ensure we fill the paint.
+    //lPaint.setStyle(
+    //  Paint.Style.FILL
+    //);
+
+    //final RadialGradient lRadialGradient = new RadialGradient(
+    //  lRadius,
+    //  lRadius,
+    //  lRadius,
+    //  new int[] { Color.BLACK, Color.WHITE },
+    //  new float[] { 0.0f, 1.0f },
+    //  TileMode.CLAMP
+    //);
+
+    //Shader shader = lRadialGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
+    //lPaint.setShader(shader); 
+    ////lPaint.setColor(Color.RED);
+    //lCanvas.drawRect(0, 0, lRadius * 2, lRadius * 2, lPaint); 
+
+
+
     final Paint lPaint = new Paint();
     // Ensure we fill the paint.
     lPaint.setStyle(
       Paint.Style.FILL
     );
-    // Render using a shadow to produce a map of intensity.
-    lPaint.setShadowLayer(
-      pBlur,
-      0,
-      0,
-      Color.BLACK
+
+    final RadialGradient lRadialGradient = new RadialGradient(
+      lRadius,
+      lRadius,
+      lRadius,
+      new int[] { Color.BLACK, Color.TRANSPARENT },
+      new float[] { 0.0f, 1.0f },
+      TileMode.CLAMP
     );
-    // Render the Circle.
-    lCanvas.drawCircle(
-      Math.round(lRadius),
-      Math.round(lRadius),
-      pRadius,
-      lPaint
-    );
+
+    Shader shader = lRadialGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
+    lPaint.setShader(shader); 
+    //lPaint.setColor(Color.RED);
+    lCanvas.drawRect(0, 0, lRadius * 2, lRadius * 2, lPaint); 
+
+    //// Render using a shadow to produce a map of intensity.
+    //lPaint.setShadowLayer(
+    //  pBlur,
+    //  0,
+    //  0,
+    //  Color.BLACK
+    //);
+    //// Render the Circle.
+    //lCanvas.drawCircle(
+    //  Math.round(lRadius),
+    //  Math.round(lRadius),
+    //  pRadius,
+    //  lPaint
+    //);
     // Return the Bitmap.
     return lBitmap;
   } 
@@ -137,7 +175,8 @@ public class HeatMap extends View {
     //  lMappedColors[i] = (int)lColors.get(i);
     //  lMappedPositions[i] = (float)lPositions.get(i);
     //}
-    final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, new int[] { Color.RED, Color.BLUE, Color.GREEN }, new float[] { 0f, 0.5f, 1f}, TileMode.CLAMP);
+    final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, new int[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED }, new float[] { 0.4f, 0.6f, 0.7f, 0.8f, 1.0f }, TileMode.CLAMP);
+
     //final LinearGradient lLinearGradient = new LinearGradient(
     //  0,
     //  0,
@@ -212,9 +251,9 @@ public class HeatMap extends View {
           lPaint
         );
     }
-    // Release the allocated Bitmaps.
-    lCircle.recycle();
-    lGradient.recycle();
+    //// Release the allocated Bitmaps.
+    //lCircle.recycle();
+    //lGradient.recycle();
     // Allocate the Pixels.
     final int[] lPixels = new int[pBitmap.getWidth() * pBitmap.getHeight()];
     // Buffer the Pixel content of the global bitmap into the Pixels.
@@ -237,12 +276,13 @@ public class HeatMap extends View {
       final int lAlpha = 0xFF & (lIsolated >> 24);
       // Fetch the Interpolated Pixel.
       final int j = pInterpolated[lAlpha];
-      // Are we handling a rendered pixel?
+      //// Are we handling a rendered pixel?
       if (lAlpha > 0) {
-        // Assign the color for this index.
-        pPixels[i] = j;
-        // Ensure the opacity is propagated.
-        pPixels[i] &= (lIsolated | 0x00FFFFFF);
+        //pPixels[i] = pInterpolated[(int)Math.floor(pInterpolated.length * Math.random())];
+      // Assign the color for this index.
+      pPixels[i] = j;
+      // Ensure the opacity is propagated.
+      pPixels[i] &= (lIsolated | 0x00FFFFFF);
       }
     }
   }
@@ -327,8 +367,10 @@ public class HeatMap extends View {
       );
 
       // Recycle the allocated Bitmap.
-      lBitmap.recycle();
+      //lBitmap.recycle();
     }
+
+    
 
     //final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, Color.RED, Color.GREEN, TileMode.CLAMP);
     //// Define the LinearGradient for the Paint's shader.
