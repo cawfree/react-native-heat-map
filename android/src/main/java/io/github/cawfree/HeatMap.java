@@ -181,7 +181,7 @@ public class HeatMap extends View {
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Map<String, Spread> pSpreads, final Map<Float, String> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final float pBlur) {
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, String> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final float pBlur) {
     // Allocate the circle to render against.
     final Bitmap lCircle = HeatMap.radius(
       pRadius,
@@ -212,6 +212,9 @@ public class HeatMap extends View {
           lPaint
         );
     }
+    // Release the allocated Bitmaps.
+    lCircle.recycle();
+    lGradient.recycle();
   }
 
   /* Member Variables. */
@@ -261,45 +264,41 @@ public class HeatMap extends View {
 
     Paint paint = new Paint();  
     paint.setStyle(Paint.Style.FILL);  
-    paint.setColor(Color.RED);  
+    paint.setColor(Color.CYAN);  
     pCanvas.drawPaint(paint);  
 
-    // TODO: Delegate Pain object for performance.
 
-    HeatMap.draw(
-      pCanvas,
-      this.getSpreads(),
-      this.getGradient(),
-      this.getRadius(),
-      this.getMax(),
-      this.getMinOpacity(),
-      this.getBlur()
-    );
+    if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0) {
+      // TODO: should verify the width and height before attempting to do this.
+  
+      final Bitmap lBitmap = Bitmap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight(), Bitmap.Config.ARGB_8888);
+      final Canvas lCanvas = new Canvas(lBitmap);
+  
+      // TODO: Delegate Pain object for performance.
+  
+      // Render the Heatmap to the local Canvas.
+      HeatMap.draw(
+        lCanvas,
+        lBitmap,
+        this.getSpreads(),
+        this.getGradient(),
+        this.getRadius(),
+        this.getMax(),
+        this.getMinOpacity(),
+        this.getBlur()
+      );
+  
+      // Write the resulting bitmap to the global Canvas.
+      pCanvas.drawBitmap(
+        lBitmap,
+        0,
+        0,
+        new Paint()
+      );
 
-    //canvas.drawPaint(paint2); 
-    //canvas.drawColor(0xFF0000FF);
-
-    // custom drawing code here  
-    //  
-    //// draw blue circle with anti aliasing turned off  
-    //paint.setAntiAlias(false);  
-    //paint.setColor(Color.BLUE);  
-    //canvas.drawCircle(20, 20, 15, paint);  
-
-    //// draw green circle with anti aliasing turned on  
-    //paint.setAntiAlias(true);  
-    //paint.setColor(Color.GREEN);  
-    //canvas.drawCircle(60, 20, 15, paint);  
-
-    //// draw red rectangle with anti aliasing turned off  
-    //paint.setAntiAlias(false);  
-    //paint.setColor(Color.RED);  
-    //canvas.drawRect(100, 5, 200, 30, paint);  
-    //               
-    //          
-    //paint.setStyle(Paint.Style.FILL);  
-    //canvas.drawText("Graphics Rotation", 40, 180, paint);  
-
+      // Recycle the allocated Bitmap.
+      lBitmap.recycle();
+    }
   }
 
   /* Getters and Setters. */
