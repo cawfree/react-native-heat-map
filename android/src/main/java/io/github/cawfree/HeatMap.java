@@ -83,42 +83,24 @@ public class HeatMap extends View {
     final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(lRadius) * 2, Math.round(lRadius) * 2, Bitmap.Config.ARGB_8888);
     final Canvas      lCanvas = new Canvas(lBitmap);
     final Paint lPaint = new Paint();
-
+    // Ensure we fill the paint.
     lPaint.setStyle(
       Paint.Style.FILL
     );
-
-    //lPaint.setColor(Color.BLUE);
-
+    // Render using a shadow to produce a map of intensity.
     lPaint.setShadowLayer(
       pBlur,
       0,
       0,
-      //lRadius * 2,
-      //lRadius * 2,
       Color.BLACK
     );
-
+    // Render the Circle.
     lCanvas.drawCircle(
       Math.round(lRadius),
       Math.round(lRadius),
       pRadius,
       lPaint
     );
-
-    log("detected"+lRadius+" and blur "+pBlur);
-
-    //// arc(x, y, r, sAngle, eAngle, counterClockwise)
-    //lCanvas.drawArc(
-    //  0,
-    //  0,
-    //  lRadius * 2,
-    //  lRadius * 2,
-    //  0,
-    //  (float)(Math.PI * 2),
-    //  false, // useCenter vs counterClockwise...
-    //  lPaint
-    //);
     // Return the Bitmap.
     return lBitmap;
   } 
@@ -245,48 +227,22 @@ public class HeatMap extends View {
 
   /** Applies the gradient threshold to the Bitmap pixel data. */
   private static final void colorize(final int[] pPixels, final int[] pInterpolated) {
-
-    //for (int k = 0; k < pInterpolated.length; k += 1) {
-    //  if (pInterpolated[k] > 0) {
-    //    log("found a real interp value at "+pInterpolated[k]);
-    //    break;
-    //  }
-    //}
     // Iterate the Pixels.
     for (int i = 0; i < pPixels.length; i += 1) {
       // Fetch the current pixel.
       final int lPixel = pPixels[i];
-      //log("pixel: "+Integer.toHexString(lPixel));
-      // Determine the alpha of the pixel.
+      // Isolate the alpha component. (ARGB)
       final int lIsolated = lPixel & 0xFF000000;
-      //log("iso "+Integer.toHexString(lIsolated));
+      // Compute the alpha.
       final int lAlpha = 0xFF & (lIsolated >> 24);
-      //if (lAlpha < 0) {
-      //  throw new Exception("got bad alpha "+lAlpha);
-      //}
       // Fetch the Interpolated Pixel.
       final int j = pInterpolated[lAlpha];
-
-
-      if (lAlpha > 0.2f) { // TODO: should be minAlpha
+      // Are we handling a rendered pixel?
+      if (lAlpha > 0) {
+        // Assign the color for this index.
         pPixels[i] = j;
+        // Ensure the opacity is propagated.
         pPixels[i] &= (lIsolated | 0x00FFFFFF);
-        //log("alpha? "+lAlpha+"interp? "+pInterpolated);
-      }
-
-      //log("got interp "+j);
-      //// Assign the gradient color based upon the opacity value.
-      //j = pPixels[i + 3] * 4;
-      // TODO: is this required?
-      // Determine whether we've countered a valid pixel.
-      if (lAlpha != 0) {
-        //pPixels[i] = j;
-        //log("got "+Integer.toHexString(pPixels[i])+" for "+j);
-        //log("pixel: "+Integer.toHexString(j));
-        //// Assign the current pixel to the interpolated gradient value.
-        //pPixels[i]     = pInterpolated[j];
-        //pPixels[i + 1] = pInterpolated[j + 1];
-        //pPixels[i + 2] = pInterpolated[j + 2];
       }
     }
   }
