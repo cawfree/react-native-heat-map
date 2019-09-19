@@ -137,46 +137,57 @@ public class HeatMap extends View {
       .sort(
         lKeys
       );
-    // Iterate the entries.
-    for (int i = 0; i < lKeys.size(); i += 1) {
-      // Fetch the entry.
-      final Float lKey    = lKeys.get(i);
-      final String lValue = pGradient.get(lKey);
-      // TODO: convert string to integer color
-      //lColors.add(lValue);
-      lColors.add(Color.RED); // TODO: need to do this for real
-      lPositions.add(lKey);
-    }
-    final int[]   lMappedColors    = new int[lColors.size()];
-    final float[] lMappedPositions = new float[lPositions.size()];
-    // Iterate the entries.
-    for (int i = 0; i < lKeys.size(); i += 1) {
-      // Buffer the primitive implementations.
-      lMappedColors[i] = (int)lColors.get(i);
-      lMappedPositions[i] = (float)lPositions.get(i);
-    }
-    final LinearGradient lLinearGradient = new LinearGradient(
-      0,
-      0,
-      1, // TODO was 0
-      256,
-      lMappedColors,
-      lMappedPositions,
-      // TODO: correct tile mode to use?
-      TileMode.CLAMP
-    );
-    // Allocate a new Paint instance.
+    //// Iterate the entries.
+    //for (int i = 0; i < lKeys.size(); i += 1) {
+    //  // Fetch the entry.
+    //  final Float lKey    = lKeys.get(i);
+    //  final String lValue = pGradient.get(lKey);
+    //  // TODO: convert string to integer color
+    //  //lColors.add(lValue);
+    //  lColors.add(Color.RED); // TODO: need to do this for real
+    //  lPositions.add(lKey);
+    //}
+    //final int[]   lMappedColors    = new int[lColors.size()];
+    //final float[] lMappedPositions = new float[lPositions.size()];
+    //// Iterate the entries.
+    //for (int i = 0; i < lKeys.size(); i += 1) {
+    //  // Buffer the primitive implementations.
+    //  lMappedColors[i] = (int)lColors.get(i);
+    //  lMappedPositions[i] = (float)lPositions.get(i);
+    //}
+    final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, new int[] { Color.RED, Color.BLUE, Color.GREEN }, new float[] { 0f, 0.5f, 1f}, TileMode.CLAMP);
+    //final LinearGradient lLinearGradient = new LinearGradient(
+    //  0,
+    //  0,
+    //  1, // TODO was 0
+    //  256,
+    //  new int[] {Color.RED, Color.GREEN, Color.BLUE },
+    //  new float[] { 0, 128, 255},
+
+    //  //lMappedColors,
+    //  //lMappedPositions,
+    //  // TODO: correct tile mode to use?
+    //  TileMode.CLAMP
+    //);
+    //// Allocate a new Paint instance.
+    //final Paint lPaint = new Paint();
+    //// Define the LinearGradient for the Paint's shader.
+    //lPaint.setShader(lLinearGradient);
+    //lPaint.setStyle(Paint.Style.FILL);
+    //lCanvas.drawRect(
+    //  0,
+    //  0,
+    //  1,
+    //  256,
+    //  lPaint
+    //);
+
     final Paint lPaint = new Paint();
-    // Define the LinearGradient for the Paint's shader.
-    lPaint.setShader(lLinearGradient);
-    lPaint.setStyle(Paint.Style.FILL);
-    lCanvas.drawRect(
-      0,
-      0,
-      1,
-      256,
-      lPaint
-    );
+    Shader shader = lLinearGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
+    lPaint.setShader(shader); 
+    //lPaint.setColor(Color.RED);
+    lCanvas.drawRect(0, 0, 1, 256, lPaint); 
+
     return lBitmap;
   }
 
@@ -190,6 +201,12 @@ public class HeatMap extends View {
     final Bitmap lGradient = HeatMap.gradient(
       pGradient
     );
+
+    // Declare a buffer for the interpolated pixels.
+    final int[] lInterpolated = new int[256];
+    // Fetch the interpolated pixels.
+    lGradient.getPixels(lInterpolated, 0, 1, 0, 0, 1, 256);
+
     // Allocate the Paint instance.
     final Paint lPaint = new Paint(); 
     // Clear the Canvas.
@@ -202,6 +219,7 @@ public class HeatMap extends View {
       final int lAlpha = Math.round(Math.min(Math.max(lPoint.getIntensity() / pMax, pMinOpacity), 1) * 255);
       // Set the Alpha.
       lPaint.setAlpha(lAlpha);
+      // Bit-blit the Bitmap contents for this position into the buffer.
       pCanvas
         .drawBitmap(
           lCircle,
@@ -215,6 +233,62 @@ public class HeatMap extends View {
     // Release the allocated Bitmaps.
     lCircle.recycle();
     lGradient.recycle();
+    // Allocate the Pixels.
+    final int[] lPixels = new int[pBitmap.getWidth() * pBitmap.getHeight()];
+    // Buffer the Pixel content of the global bitmap into the Pixels.
+    pBitmap.getPixels(lPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
+    // Colorize the Pixels.
+    HeatMap.colorize(lPixels, lInterpolated);
+    // Re-assign the Pixels back to the Bitmap.
+    pBitmap.setPixels(lPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
+  }
+
+  /** Applies the gradient threshold to the Bitmap pixel data. */
+  private static final void colorize(final int[] pPixels, final int[] pInterpolated) {
+
+    //for (int k = 0; k < pInterpolated.length; k += 1) {
+    //  if (pInterpolated[k] > 0) {
+    //    log("found a real interp value at "+pInterpolated[k]);
+    //    break;
+    //  }
+    //}
+    // Iterate the Pixels.
+    for (int i = 0; i < pPixels.length; i += 1) {
+      // Fetch the current pixel.
+      final int lPixel = pPixels[i];
+      //log("pixel: "+Integer.toHexString(lPixel));
+      // Determine the alpha of the pixel.
+      final int lIsolated = lPixel & 0xFF000000;
+      //log("iso "+Integer.toHexString(lIsolated));
+      final int lAlpha = 0xFF & (lIsolated >> 24);
+      //if (lAlpha < 0) {
+      //  throw new Exception("got bad alpha "+lAlpha);
+      //}
+      // Fetch the Interpolated Pixel.
+      final int j = pInterpolated[lAlpha];
+
+
+      if (lAlpha > 0.2f) { // TODO: should be minAlpha
+        pPixels[i] = j;
+        pPixels[i] &= (lIsolated | 0x00FFFFFF);
+        //log("alpha? "+lAlpha+"interp? "+pInterpolated);
+      }
+
+      //log("got interp "+j);
+      //// Assign the gradient color based upon the opacity value.
+      //j = pPixels[i + 3] * 4;
+      // TODO: is this required?
+      // Determine whether we've countered a valid pixel.
+      if (lAlpha != 0) {
+        //pPixels[i] = j;
+        //log("got "+Integer.toHexString(pPixels[i])+" for "+j);
+        //log("pixel: "+Integer.toHexString(j));
+        //// Assign the current pixel to the interpolated gradient value.
+        //pPixels[i]     = pInterpolated[j];
+        //pPixels[i + 1] = pInterpolated[j + 1];
+        //pPixels[i + 2] = pInterpolated[j + 2];
+      }
+    }
   }
 
   /* Member Variables. */
@@ -242,7 +316,7 @@ public class HeatMap extends View {
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
     this.mBlur         = HeatMap.DEFAULT_BLUR;
 
-    this.getSpreads().put("test", new Spread(100f, 100f, 0.5f));
+    this.getSpreads().put("test", new Spread(100f, 100f, 1.0f));
 
   }
 
@@ -262,10 +336,10 @@ public class HeatMap extends View {
   protected void onDraw(final Canvas pCanvas) {
     super.onDraw(pCanvas);  
 
-    Paint paint = new Paint();  
-    paint.setStyle(Paint.Style.FILL);  
-    paint.setColor(Color.CYAN);  
-    pCanvas.drawPaint(paint);  
+    //Paint paint = new Paint();  
+    //paint.setStyle(Paint.Style.FILL);  
+    //paint.setColor(Color.CYAN);  
+    //pCanvas.drawPaint(paint);  
 
 
     if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0) {
@@ -299,6 +373,19 @@ public class HeatMap extends View {
       // Recycle the allocated Bitmap.
       lBitmap.recycle();
     }
+
+    //final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, Color.RED, Color.GREEN, TileMode.CLAMP);
+    //// Define the LinearGradient for the Paint's shader.
+    //lPaint.setShader(lLinearGradient);
+    //lPaint.setStyle(Paint.Style.FILL);
+    //pCanvas.drawRect(
+    //  0,
+    //  0,
+    //  1,
+    //  256,
+    //  lPaint
+    //);
+
   }
 
   /* Getters and Setters. */
