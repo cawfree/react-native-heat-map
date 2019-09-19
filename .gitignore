@@ -20,6 +20,12 @@ DerivedData
 *.ipa
 *.xcuserstate
 project.xcworkspace
+ios/build
+ios/build/Pods
+ios/main.jsbundle
+ios/main.jsbundle.meta
+ios/Pods/
+ios/Podfile.lock
 
 # Gradle
 /build/
@@ -44,14 +50,19 @@ buck-out
 .gradle
 local.properties
 *.iml
-/android/
-
+/android/build
+/android/gradle
+/android/.gradle-backup/
+/android/app/build/
+/android/app/src/main/assets/index.android.bundle
+/android/app/src/main/assets/index.android.bundle.meta
+/android/app/src/main/assets/threads/index.threaed.bundle
 # Node
 node_modules
 *.log
 .nvm
 /bots/node_modules/
-package-lock.json
+*/**/yarn.lock
 
 # OS X
 .DS_Store
@@ -63,36 +74,4 @@ package-lock.json
 /coverage
 /third-party
 
-# Root dir shouldn't have Xcode project
-/*.xcodeproj
-
-# ReactCommon subdir shouldn't have Xcode project
-/ReactCommon/**/*.xcodeproj
-RNTester/build
-
-# Libs that shouldn't have Xcode project
-/Libraries/FBLazyVector/**/*.xcodeproj
-/Libraries/FBReactNativeSpec/**/*.xcodeproj
-/Libraries/RCTRequired/**/*.xcodeproj
-/React/CoreModules/**/*.xcodeproj
-/packages/react-native-codegen/**/*.xcodeproj
-
-# CocoaPods
-/template/ios/Pods/
-/template/ios/Podfile.lock
-/RNTester/Gemfile.lock
-
-# RNTester Pods: all top level files of the Pods folder must be listed
-RNTester/Pods/DoubleConversion
-RNTester/Pods/Folly
-RNTester/Pods/Headers
-RNTester/Pods/Manifest.lock
-RNTester/Pods/Local Podspecs
-RNTester/Pods/Pods.xcodeproj
-RNTester/Pods/Target Support Files
-RNTester/Pods/boost-for-react-native
-RNTester/Pods/glog
-
-# react-native-codegen
-/ReactCommon/fabric/components/rncore/
-/schema-rncore.json
+yarn.lock
