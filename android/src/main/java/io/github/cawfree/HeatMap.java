@@ -83,34 +83,12 @@ public class HeatMap extends View {
     final float       lRadius = pRadius + pBlur;
     final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(lRadius) * 2, Math.round(lRadius) * 2, Bitmap.Config.ARGB_8888);
     final Canvas      lCanvas = new Canvas(lBitmap);
-    //final Paint lPaint = new Paint();
-    //// Ensure we fill the paint.
-    //lPaint.setStyle(
-    //  Paint.Style.FILL
-    //);
-
-    //final RadialGradient lRadialGradient = new RadialGradient(
-    //  lRadius,
-    //  lRadius,
-    //  lRadius,
-    //  new int[] { Color.BLACK, Color.WHITE },
-    //  new float[] { 0.0f, 1.0f },
-    //  TileMode.CLAMP
-    //);
-
-    //Shader shader = lRadialGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
-    //lPaint.setShader(shader); 
-    ////lPaint.setColor(Color.RED);
-    //lCanvas.drawRect(0, 0, lRadius * 2, lRadius * 2, lPaint); 
-
-
-
     final Paint lPaint = new Paint();
-    // Ensure we fill the paint.
+
     lPaint.setStyle(
       Paint.Style.FILL
     );
-
+    
     final RadialGradient lRadialGradient = new RadialGradient(
       lRadius,
       lRadius,
@@ -120,25 +98,10 @@ public class HeatMap extends View {
       TileMode.CLAMP
     );
 
-    Shader shader = lRadialGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
-    lPaint.setShader(shader); 
-    //lPaint.setColor(Color.RED);
+    // Use the RadialGradient to render the intensity of this point.
+    lPaint.setShader(lRadialGradient); 
+    // Render the sphere within a rectangle.
     lCanvas.drawRect(0, 0, lRadius * 2, lRadius * 2, lPaint); 
-
-    //// Render using a shadow to produce a map of intensity.
-    //lPaint.setShadowLayer(
-    //  pBlur,
-    //  0,
-    //  0,
-    //  Color.BLACK
-    //);
-    //// Render the Circle.
-    //lCanvas.drawCircle(
-    //  Math.round(lRadius),
-    //  Math.round(lRadius),
-    //  pRadius,
-    //  lPaint
-    //);
     // Return the Bitmap.
     return lBitmap;
   } 
@@ -157,51 +120,8 @@ public class HeatMap extends View {
       .sort(
         lKeys
       );
-    //// Iterate the entries.
-    //for (int i = 0; i < lKeys.size(); i += 1) {
-    //  // Fetch the entry.
-    //  final Float lKey    = lKeys.get(i);
-    //  final String lValue = pGradient.get(lKey);
-    //  // TODO: convert string to integer color
-    //  //lColors.add(lValue);
-    //  lColors.add(Color.RED); // TODO: need to do this for real
-    //  lPositions.add(lKey);
-    //}
-    //final int[]   lMappedColors    = new int[lColors.size()];
-    //final float[] lMappedPositions = new float[lPositions.size()];
-    //// Iterate the entries.
-    //for (int i = 0; i < lKeys.size(); i += 1) {
-    //  // Buffer the primitive implementations.
-    //  lMappedColors[i] = (int)lColors.get(i);
-    //  lMappedPositions[i] = (float)lPositions.get(i);
-    //}
+
     final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, new int[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED }, new float[] { 0.4f, 0.6f, 0.7f, 0.8f, 1.0f }, TileMode.CLAMP);
-
-    //final LinearGradient lLinearGradient = new LinearGradient(
-    //  0,
-    //  0,
-    //  1, // TODO was 0
-    //  256,
-    //  new int[] {Color.RED, Color.GREEN, Color.BLUE },
-    //  new float[] { 0, 128, 255},
-
-    //  //lMappedColors,
-    //  //lMappedPositions,
-    //  // TODO: correct tile mode to use?
-    //  TileMode.CLAMP
-    //);
-    //// Allocate a new Paint instance.
-    //final Paint lPaint = new Paint();
-    //// Define the LinearGradient for the Paint's shader.
-    //lPaint.setShader(lLinearGradient);
-    //lPaint.setStyle(Paint.Style.FILL);
-    //lCanvas.drawRect(
-    //  0,
-    //  0,
-    //  1,
-    //  256,
-    //  lPaint
-    //);
 
     final Paint lPaint = new Paint();
     Shader shader = lLinearGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
@@ -231,7 +151,7 @@ public class HeatMap extends View {
     // Allocate the Paint instance.
     final Paint lPaint = new Paint(); 
     // Clear the Canvas.
-    //pCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+    pCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
     // Draw a greyscale heatmap by placing a blurred circle at each data point.
     for (final Entry<String, Spread> lEntry : pSpreads.entrySet()) {
       // Fetch the point data.
@@ -251,9 +171,9 @@ public class HeatMap extends View {
           lPaint
         );
     }
-    //// Release the allocated Bitmaps.
-    //lCircle.recycle();
-    //lGradient.recycle();
+    // Release the allocated Bitmaps.
+    lCircle.recycle();
+    lGradient.recycle();
     // Allocate the Pixels.
     final int[] lPixels = new int[pBitmap.getWidth() * pBitmap.getHeight()];
     // Buffer the Pixel content of the global bitmap into the Pixels.
@@ -278,11 +198,10 @@ public class HeatMap extends View {
       final int j = pInterpolated[lAlpha];
       //// Are we handling a rendered pixel?
       if (lAlpha > 0) {
-        //pPixels[i] = pInterpolated[(int)Math.floor(pInterpolated.length * Math.random())];
-      // Assign the color for this index.
-      pPixels[i] = j;
-      // Ensure the opacity is propagated.
-      pPixels[i] &= (lIsolated | 0x00FFFFFF);
+        // Assign the color for this index.
+        pPixels[i] = j;
+        // Ensure the opacity is propagated.
+        pPixels[i] &= (lIsolated | 0x00FFFFFF);
       }
     }
   }
@@ -313,6 +232,7 @@ public class HeatMap extends View {
     this.mBlur         = HeatMap.DEFAULT_BLUR;
 
     this.getSpreads().put("test", new Spread(100f, 100f, 1.0f));
+    this.getSpreads().put("tested", new Spread(110f, 110f, 1.0f));
 
   }
 
@@ -331,12 +251,6 @@ public class HeatMap extends View {
   @Override 
   protected void onDraw(final Canvas pCanvas) {
     super.onDraw(pCanvas);  
-
-    //Paint paint = new Paint();  
-    //paint.setStyle(Paint.Style.FILL);  
-    //paint.setColor(Color.CYAN);  
-    //pCanvas.drawPaint(paint);  
-
 
     if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0) {
       // TODO: should verify the width and height before attempting to do this.
@@ -367,22 +281,8 @@ public class HeatMap extends View {
       );
 
       // Recycle the allocated Bitmap.
-      //lBitmap.recycle();
+      lBitmap.recycle();
     }
-
-    
-
-    //final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, Color.RED, Color.GREEN, TileMode.CLAMP);
-    //// Define the LinearGradient for the Paint's shader.
-    //lPaint.setShader(lLinearGradient);
-    //lPaint.setStyle(Paint.Style.FILL);
-    //pCanvas.drawRect(
-    //  0,
-    //  0,
-    //  1,
-    //  256,
-    //  lPaint
-    //);
 
   }
 
