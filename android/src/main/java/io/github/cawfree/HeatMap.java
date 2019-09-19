@@ -64,18 +64,18 @@ public class HeatMap extends View {
   } 
 
   /* Static Declarations. */
-  private static final float              DEFAULT_BLUR        = 30f;
-  private static final float              DEFAULT_MAX         = 1f;
-  private static final float              DEFAULT_RADIUS      = 25f;
-  private static final float              DEFAULT_MIN_OPACITY = 0.05f;
-  private static final Map<Float, String> DEFAULT_GRADIENT = Collections
+  private static final float               DEFAULT_BLUR        = 30f;
+  private static final float               DEFAULT_MAX         = 1f;
+  private static final float               DEFAULT_RADIUS      = 25f;
+  private static final float               DEFAULT_MIN_OPACITY = 0.05f;
+  private static final Map<Float, Integer> DEFAULT_GRADIENT = Collections
       .unmodifiableMap(
-        new HashMap<Float, String>() { {
-          this.put(Float.valueOf(0.4f), "blue");
-          this.put(Float.valueOf(0.6f), "cyan");
-          this.put(Float.valueOf(0.7f), "lime");
-          this.put(Float.valueOf(0.8f), "yellow");
-          this.put(Float.valueOf(1.0f), "red");
+        new HashMap<Float, Integer>() { {
+          this.put(Float.valueOf(0.4f), Color.BLUE);
+          this.put(Float.valueOf(0.6f), Color.CYAN);
+          this.put(Float.valueOf(0.7f), Color.GREEN);
+          this.put(Float.valueOf(0.8f), Color.YELLOW);
+          this.put(Float.valueOf(1.0f), Color.RED);
         }}
       );
 
@@ -107,12 +107,12 @@ public class HeatMap extends View {
   } 
 
   /** Generates a Bitmap which contains the evaluated Gradient. */
-  private static final Bitmap gradient(final Map<Float, String> pGradient) {
+  private static final Bitmap gradient(final Map<Float, Integer> pGradient) {
     // Declare Member Variables.
     final Bitmap        lBitmap    = Bitmap.createBitmap(1, 256, Bitmap.Config.ARGB_8888);
     final Canvas        lCanvas    = new Canvas(lBitmap);
     final List<Integer> lColors    = new ArrayList<>(pGradient.size());
-    final List<Float>   lPositions = new ArrayList<>(pGradient.size());
+    //final List<Float>   lPositions = new ArrayList<>(pGradient.size());
     // Fetch the Map Entries.
     final List<Float> lKeys = new ArrayList<>(pGradient.keySet());
     // TODO: sort these entries!!!
@@ -121,7 +121,28 @@ public class HeatMap extends View {
         lKeys
       );
 
-    final LinearGradient lLinearGradient = new LinearGradient(0, 0, 1, 256, new int[] { Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED }, new float[] { 0.4f, 0.6f, 0.7f, 0.8f, 1.0f }, TileMode.CLAMP);
+    final float[] lProgress = new float[lKeys.size()];
+    final int[]   lVecColors  = new int[lKeys.size()];
+
+    for (int i = 0; i < lKeys.size(); i += 1) {
+      final Float lKey = lKeys.get(i);
+      lProgress[i] = (float)lKey;
+      lVecColors[i] = (int)pGradient.get(lKey);
+    }
+    //for (final Float lKey : lKeys) {
+    //  lVecColors[
+    //  lColors.put(pGradient.get(lKey));
+    //}
+
+    final LinearGradient lLinearGradient = new LinearGradient(
+      0,
+      0,
+      1,
+      256,
+      lVecColors,
+      lProgress,
+      TileMode.CLAMP
+    );
 
     final Paint lPaint = new Paint();
     Shader shader = lLinearGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
@@ -133,7 +154,7 @@ public class HeatMap extends View {
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, String> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final float pBlur) {
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final float pBlur) {
     // Allocate the circle to render against.
     final Bitmap lCircle = HeatMap.radius(
       pRadius,
@@ -211,7 +232,7 @@ public class HeatMap extends View {
   private       int                 mCanvasHeight;
   private       float               mMax;
   private       float               mRadius;
-  private final Map<Float, String>  mGradient;
+  private final Map<Float, Integer> mGradient;
   private final Map<String, Spread> mSpreads;
   private       float               mMinOpacity;
   private       float               mBlur;
@@ -231,10 +252,10 @@ public class HeatMap extends View {
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
     this.mBlur         = HeatMap.DEFAULT_BLUR;
 
-    for (int i = 0; i < 500; i += 1) {
+    for (int i = 0; i < 2000; i += 1) {
       this.getSpreads().put((""+i), new Spread(
-        (float)(Math.random() * 500),
-        (float)(Math.random() * 500),
+        (float)(Math.random() * 1000),
+        (float)(Math.random() * 2000),
         (float)Math.random()
       ));
     }
@@ -312,7 +333,7 @@ public class HeatMap extends View {
     return this.mSpreads;
   }
 
-  private final Map<Float, String> getGradient() {
+  private final Map<Float, Integer> getGradient() {
     return this.mGradient;
   }
 
