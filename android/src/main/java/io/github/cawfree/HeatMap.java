@@ -231,8 +231,13 @@ public class HeatMap extends View {
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
     this.mBlur         = HeatMap.DEFAULT_BLUR;
 
-    this.getSpreads().put("test", new Spread(100f, 100f, 1.0f));
-    this.getSpreads().put("tested", new Spread(110f, 110f, 1.0f));
+    for (int i = 0; i < 500; i += 1) {
+      this.getSpreads().put((""+i), new Spread(
+        (float)(Math.random() * 500),
+        (float)(Math.random() * 500),
+        (float)Math.random()
+      ));
+    }
 
   }
 

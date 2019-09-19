@@ -5,11 +5,18 @@ import HeatMap from 'react-native-heat-map';
 export default class App extends Component<{}> {
   render() {
     return (
-      <HeatMap
+      <View
         style={{
+          backgroundColor: 'purple',
           flex: 1,
         }}
-      />
+      >
+        <HeatMap
+          style={{
+            flex: 1,
+          }}
+        />
+      </View>
     );
   }
 }
