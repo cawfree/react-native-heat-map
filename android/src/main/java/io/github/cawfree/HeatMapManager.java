@@ -40,7 +40,7 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
   @ReactProp(name = "radius")
   public final void setRadius(final HeatMap pHeatMap, final float pRadius) {
     // Assign the Radius.
-    pHeatMap.setRadius(pRadius);
+    pHeatMap.setRadius(Math.max(pRadius, 1f));
   }
 
 }

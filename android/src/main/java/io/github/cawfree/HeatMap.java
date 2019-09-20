@@ -78,10 +78,17 @@ public class HeatMap extends View {
         }}
       );
 
+  /** Creates a safe Bitmap. */
+  private static final Bitmap createBitmap(final float pWidth, final float pHeight) {
+    final int lWidth = Math.max(1, (int)Math.ceil(pWidth));
+    final int lHeight = Math.max(1, (int)Math.ceil(pHeight));
+    return Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
+  }
+
   /** Renders a monochrome gradient circle, which is rendered at each point position. */
   private static final Bitmap radius(final float pRadius) {
     // Allocate the Bitmap. (Support transparency.)
-    final Bitmap      lBitmap = Bitmap.createBitmap((int)Math.ceil(pRadius) * 2, (int)Math.ceil(pRadius) * 2, Bitmap.Config.ARGB_8888);
+    final Bitmap      lBitmap = HeatMap.createBitmap(pRadius * 2, pRadius * 2);
     // Wrap the Bitmap in a Canvas so we can draw to it.
     final Canvas      lCanvas = new Canvas(lBitmap);
     // Allocate the Paint.
@@ -108,7 +115,7 @@ public class HeatMap extends View {
   /** Generates a Bitmap which contains the evaluated Gradient. */
   private static final Bitmap gradient(final Map<Float, Integer> pGradient) {
     // Declare Member Variables.
-    final Bitmap        lBitmap    = Bitmap.createBitmap(1, 256, Bitmap.Config.ARGB_8888);
+    final Bitmap        lBitmap    = HeatMap.createBitmap(1, 256);
     final Canvas        lCanvas    = new Canvas(lBitmap);
     final List<Integer> lColors    = new ArrayList<>(pGradient.size());
     // Fetch the Map Entries.
@@ -275,7 +282,7 @@ public class HeatMap extends View {
     if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0) {
       // TODO: should verify the width and height before attempting to do this.
   
-      final Bitmap lBitmap = Bitmap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight(), Bitmap.Config.ARGB_8888);
+      final Bitmap lBitmap = HeatMap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight());
       final Canvas lCanvas = new Canvas(lBitmap);
   
       // TODO: Delegate Pain object for performance.

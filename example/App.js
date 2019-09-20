@@ -5,6 +5,7 @@ import HeatMap from 'react-native-heat-map';
 export default class App extends Component<{}> {
   state = {
     max: 1.0,
+    radius: 1,
   };
   componentDidMount() {
     const t = new Date().getTime();
@@ -12,8 +13,7 @@ export default class App extends Component<{}> {
       () => {
         this.setState(
           {
-            max: Math.random(),
-            radius: Math.random() * 60,
+            radius: (this.state.radius + 1) % 60,
           },
         );
       },
