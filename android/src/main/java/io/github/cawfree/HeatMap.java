@@ -171,13 +171,13 @@ public class HeatMap extends View {
       final int lAlpha = Math.round(Math.min(Math.max(lPoint.getIntensity() / pMax, pMinOpacity), 1) * 255);
       // Set the Alpha.
       lPaint.setAlpha(lAlpha);
-      // Fetch region data.
-      final double lLatitude = pRegion[0];
-      final double lLongitude = pRegion[1];
-      final double lLatitudeDelta = pRegion[2];
-      final double lLongitudeDelta = pRegion[3];
       // Should we scale the supplied co-ordinates?
       if (pRegion != null) {
+        // Fetch region data.
+        final double lLatitude = pRegion[0];
+        final double lLongitude = pRegion[1];
+        final double lLatitudeDelta = pRegion[2];
+        final double lLongitudeDelta = pRegion[3];
         // Allocate a MercatorMap.
         final MercatorMap lMercatorMap = new MercatorMap(
           pBitmap.getWidth(),
