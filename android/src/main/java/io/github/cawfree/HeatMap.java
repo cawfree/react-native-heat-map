@@ -81,7 +81,7 @@ public class HeatMap extends View {
   /** Renders a monochrome gradient circle, which is rendered at each point position. */
   private static final Bitmap radius(final float pRadius) {
     // Allocate the Bitmap. (Support transparency.)
-    final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(pRadius) * 2, Math.round(pRadius) * 2, Bitmap.Config.ARGB_8888);
+    final Bitmap      lBitmap = Bitmap.createBitmap((int)Math.ceil(pRadius) * 2, (int)Math.ceil(pRadius) * 2, Bitmap.Config.ARGB_8888);
     // Wrap the Bitmap in a Canvas so we can draw to it.
     final Canvas      lCanvas = new Canvas(lBitmap);
     // Allocate the Paint.
@@ -330,6 +330,11 @@ public class HeatMap extends View {
     return this.mGradient;
   }
 
+  public final void setRadius(final float pRadius) {
+    this.mRadius = pRadius;
+    this.invalidate();
+  }
+
   private final float getRadius() {
     return this.mRadius;
   }
@@ -341,6 +346,11 @@ public class HeatMap extends View {
 
   private final float getMax() {
     return this.mMax;
+  }
+
+  public final void setMinOpacity(final float pMinOpacity) {
+    this.mMinOpacity = pMinOpacity;
+    this.invalidate();
   }
 
   private final float getMinOpacity() {

@@ -12,7 +12,8 @@ export default class App extends Component<{}> {
       () => {
         this.setState(
           {
-            max: Math.sin(((new Date().getTime() - t) / 1000) * Math.PI * 2),
+            max: Math.random(),
+            radius: Math.random() * 60,
           },
         );
       },
@@ -20,7 +21,10 @@ export default class App extends Component<{}> {
     );
   }
   render() {
-    const { max } = this.state;
+    const {
+      max,
+      radius,
+    } = this.state;
     return (
       <View
         style={{
@@ -33,6 +37,7 @@ export default class App extends Component<{}> {
             flex: 1,
           }}
           max={max}
+          radius={radius}
         />
       </View>
     );

@@ -31,4 +31,16 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
     pHeatMap.setMax(pMax);
   }
 
+  @ReactProp(name = "minOpacity")
+  public final void setMinOpacity(final HeatMap pHeatMap, final float pMinOpacity) {
+    // Assign the MinOpacity.
+    pHeatMap.setMinOpacity(pMinOpacity);
+  }
+
+  @ReactProp(name = "radius")
+  public final void setRadius(final HeatMap pHeatMap, final float pRadius) {
+    // Assign the Radius.
+    pHeatMap.setRadius(pRadius);
+  }
+
 }
