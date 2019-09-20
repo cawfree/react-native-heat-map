@@ -158,20 +158,9 @@ public class HeatMap extends View {
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final List<Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity) {
-    // Allocate the circle to render against.
-    final Bitmap lCircle = HeatMap.radius(
-      pRadius
-    );
-    final Bitmap lGradient = HeatMap.gradient(
-      pGradient
-    );
-
-    // Declare a buffer for the interpolated pixels.
-    final int[] lInterpolated = new int[256];
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Bitmap pCircle, final Bitmap pInterpolated, final List<Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final int[] pBuffer, final int[] pPixels) {
     // Fetch the interpolated pixels.
-    lGradient.getPixels(lInterpolated, 0, 1, 0, 0, 1, 256);
-
+    pInterpolated.getPixels(pBuffer, 0, 1, 0, 0, 1, 256);
     // Allocate the Paint instance.
     final Paint lPaint = new Paint(); 
     // Clear the Canvas.
@@ -185,7 +174,7 @@ public class HeatMap extends View {
       // Bit-blit the Bitmap contents for this position into the buffer.
       pCanvas
         .drawBitmap(
-          lCircle,
+          pCircle,
           // TODO: top left corner defines render position
           lPoint.getX() - pRadius,
           lPoint.getY() - pRadius,
@@ -193,17 +182,12 @@ public class HeatMap extends View {
           lPaint
         );
     }
-    // Release the allocated Bitmaps.
-    lCircle.recycle();
-    lGradient.recycle();
-    // Allocate the Pixels.
-    final int[] lPixels = new int[pBitmap.getWidth() * pBitmap.getHeight()];
     // Buffer the Pixel content of the global bitmap into the Pixels.
-    pBitmap.getPixels(lPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
+    pBitmap.getPixels(pPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
     // Colorize the Pixels.
-    HeatMap.colorize(lPixels, lInterpolated);
+    HeatMap.colorize(pPixels, pBuffer);
     // Re-assign the Pixels back to the Bitmap.
-    pBitmap.setPixels(lPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
+    pBitmap.setPixels(pPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
   }
 
   /** Applies the gradient threshold to the Bitmap pixel data. */
@@ -214,6 +198,7 @@ public class HeatMap extends View {
       final int lPixel = pPixels[i];
       // Isolate the alpha component. (ARGB)
       final int lIsolated = lPixel & 0xFF000000;
+      // Has the pixel got an alpha value?
       // Compute the alpha.
       final int lAlpha = 0xFF & (lIsolated >> 24);
       // Fetch the Interpolated Pixel.
@@ -236,6 +221,11 @@ public class HeatMap extends View {
   private final Map<Float, Integer> mGradient;
   private final List<Spread>        mSpreads;
   private       float               mMinOpacity;
+  private       Bitmap              mCircle;
+  private       Bitmap              mBitmap;
+  private       Bitmap              mInterpolated;
+  private final int[]               mBuffer;
+  private       int[]               mPixels;
 
   /* Constructor. */
   public HeatMap(final Context pContext) {
@@ -250,17 +240,11 @@ public class HeatMap extends View {
     this.mGradient     = HeatMap.DEFAULT_GRADIENT;
     this.mSpreads      = new ArrayList<>();
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
-
-    for (int i = 0; i < 2000; i += 1) {
-      this.getSpreads().add(
-        new Spread(
-          (float)(Math.random() * 1000),
-          (float)(Math.random() * 2000),
-          (float)Math.random()
-        )
-      );
-    }
-
+    this.mCircle       = null;
+    this.mBitmap       = null;
+    this.mInterpolated = HeatMap.gradient(HeatMap.DEFAULT_GRADIENT);
+    this.mBuffer       = new int[256];
+    this.mPixels       = new int[0];
   }
 
   @Override
@@ -278,11 +262,26 @@ public class HeatMap extends View {
   @Override 
   protected void onDraw(final Canvas pCanvas) {
     super.onDraw(pCanvas);  
+    /// Fetch the Circle.
+    final Bitmap lCircle = this.getCircle();
 
-    if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0) {
+    if (this.getCanvasWidth() > 0 && this.getCanvasHeight() > 0 && lCircle != null) {
+      // Attempt to fetch the existing Bitmap.
+      Bitmap lBitmap = this.getBitmap();
+      // Do we need to make a new Bitmap?
+      if (lBitmap == null || this.getCanvasWidth() != lBitmap.getWidth() || this.getCanvasHeight() != lBitmap.getHeight()) {
+        // Assign the Bitmap;
+        lBitmap = HeatMap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight());
+        this.setPixels(
+          new int[this.getCanvasWidth() * this.getCanvasHeight()]
+        );
+        this.setBitmap(
+          lBitmap
+        );
+      }
       // TODO: should verify the width and height before attempting to do this.
   
-      final Bitmap lBitmap = HeatMap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight());
+      //final Bitmap lBitmap = ;
       final Canvas lCanvas = new Canvas(lBitmap);
   
       // TODO: Delegate Pain object for performance.
@@ -291,11 +290,15 @@ public class HeatMap extends View {
       HeatMap.draw(
         lCanvas,
         lBitmap,
+        lCircle,
+        this.getInterpolated(),
         this.getSpreads(),
         this.getGradient(),
         this.getRadius(),
         this.getMax(),
-        this.getMinOpacity()
+        this.getMinOpacity(),
+        this.getBuffer(),
+        this.getPixels()
       );
   
       // Write the resulting bitmap to the global Canvas.
@@ -307,7 +310,7 @@ public class HeatMap extends View {
       );
 
       // Recycle the allocated Bitmap.
-      lBitmap.recycle();
+      //lBitmap.recycle();
     }
 
   }
@@ -329,6 +332,15 @@ public class HeatMap extends View {
     return this.mCanvasHeight;
   }
 
+  public final void setSpreads(final List<HeatMap.Spread> pSpreads) {
+    // Clear the existing Spreads.
+    this.getSpreads().clear();
+    // Add all the existing Spreads.
+    this.getSpreads().addAll(pSpreads);
+    // Redraw.
+    this.invalidate();
+  }
+
   private final List<Spread> getSpreads() {
     return this.mSpreads;
   }
@@ -339,6 +351,14 @@ public class HeatMap extends View {
 
   public final void setRadius(final float pRadius) {
     this.mRadius = pRadius;
+    if (this.getCircle() != null) {
+      this.getCircle().recycle();
+    }
+    this.setCircle(
+      HeatMap.radius(
+        pRadius
+      )
+    );
     this.invalidate();
   }
 
@@ -362,6 +382,48 @@ public class HeatMap extends View {
 
   private final float getMinOpacity() {
     return this.mMinOpacity;
+  }
+
+  private final void setCircle(final Bitmap pBitmap) {
+    this.mCircle = pBitmap;
+  }
+
+  private final Bitmap getCircle() {
+    return this.mCircle;
+  }
+
+  private final void setBitmap(final Bitmap pBitmap) {
+    if (this.getBitmap() != null) {
+      this.getBitmap().recycle();
+    }
+    this.mBitmap = pBitmap;
+  }
+
+  private final Bitmap getBitmap() {
+    return this.mBitmap;
+  }
+
+  private final void setInterpolated(final Bitmap pBitmap) {
+    if (this.getInterpolated() != null) {
+      this.getInterpolated().recycle();
+    }
+    this.mInterpolated = pBitmap;
+  }
+
+  private final Bitmap getInterpolated() {
+    return this.mInterpolated;
+  }
+
+  private final int[] getBuffer() {
+    return this.mBuffer;
+  }
+
+  private final void setPixels(final int[] pPixels) {
+    this.mPixels = pPixels;
+  }
+
+  private final int[] getPixels() {
+    return this.mPixels;
   }
 
 }  

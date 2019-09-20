@@ -4,6 +4,7 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -57,20 +58,28 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
   //  }
   //}
 
-  //@ReactProp(name = "data)
-  //public final void setData(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
-  //  if (pReadableMap == null) {
-  //    return;
-  //  }
-  //  //// Allocate a HashMap to contain the converted data.
-  //  //final Map<Float, HeatMap.Spread> lHashMap = new HashMap<>();
-  //  //// Iterate the ReadableMap.
-  //  //for (final Map.Entry<String, Object> lEntry : pReadableMap.getEntryIterator()) {
-  //  //  // Fetch the Key.
-  //  //  final String lKey = lEntry.getKey();
-  //  //  // Get the ReadableArray.
-  //  //  final ReadableArray lReadableArray = pReadableMap.getArray(lKey);
-  //  //}
-  //}
+  @ReactProp(name = "data")
+  public final void setData(final HeatMap pHeatMap, final ReadableArray pReadableArray) {
+    if (pReadableArray == null) {
+      return;
+    }
+    // Allocate a HashMap to contain the converted data.
+    final List<HeatMap.Spread> lSpreads = new ArrayList<>();
+    // Iterate the ReadableArray.
+    for (int i = 0; i < pReadableArray.size(); i += 1) {
+      // Fetch the point data.
+      final ReadableArray lReadableArray = pReadableArray.getArray(i);
+      // Allocate a HeatMap.Spread.
+      lSpreads.add(
+        new HeatMap.Spread(
+          (float)lReadableArray.getDouble(0),
+          (float)lReadableArray.getDouble(1),
+          (float)lReadableArray.getDouble(2)
+        )
+      );
+    }
+    // Buffer into the HeatMap.
+    pHeatMap.setSpreads(lSpreads);
+  }
 
 }

@@ -1,15 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { requireNativeComponent, View } from 'react-native';
+import { PixelRatio, requireNativeComponent, View } from 'react-native';
 import normalizeColor from 'react-native/Libraries/Color/normalizeColor.js';
 
 const NativeHeatMap = requireNativeComponent('HeatMap', null);
 
 class HeatMap extends React.Component {
   render() {
+    const {
+      data,
+      radius,
+      ...extraProps
+    } = this.props;
     return (
       <NativeHeatMap
-        {...this.props}
+        {...extraProps}
+        radius={radius * PixelRatio.get()}
+        data={data.map(
+          ([ x, y, ...extras ]) => (
+            [
+              x * PixelRatio.get(),
+              y * PixelRatio.get(),
+              ...extras,
+            ]
+          ),
+        )}
       />
     );
   }
@@ -35,13 +50,13 @@ HeatMap.defaultProps = {
     0.8: 'yellow',
     1.0: 'red',
   },
-  data: {
-    someBlob: {
-      x: 100,
-      y: 100,
-      z: 1,
-    },
-  },
+  data: [
+    [
+      100,
+      100,
+      1,
+    ],
+  ],
   minOpacity: 0.05,
 };
 
