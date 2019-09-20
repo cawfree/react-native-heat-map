@@ -10,6 +10,13 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.HashMap;
+import java.util.Collections;
+
 @ReactModule(name = HeatMapManager.REACT_CLASS)
 public class HeatMapManager extends SimpleViewManager<HeatMap> {
 
@@ -42,5 +49,28 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
     // Assign the Radius.
     pHeatMap.setRadius(Math.max(pRadius, 1f));
   }
+
+  //@ReactProp(name = "gradient")
+  //public final void setGradient(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
+  //  if (pReadableMap == null) {
+  //    return;
+  //  }
+  //}
+
+  //@ReactProp(name = "data)
+  //public final void setData(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
+  //  if (pReadableMap == null) {
+  //    return;
+  //  }
+  //  //// Allocate a HashMap to contain the converted data.
+  //  //final Map<Float, HeatMap.Spread> lHashMap = new HashMap<>();
+  //  //// Iterate the ReadableMap.
+  //  //for (final Map.Entry<String, Object> lEntry : pReadableMap.getEntryIterator()) {
+  //  //  // Fetch the Key.
+  //  //  final String lKey = lEntry.getKey();
+  //  //  // Get the ReadableArray.
+  //  //  final ReadableArray lReadableArray = pReadableMap.getArray(lKey);
+  //  //}
+  //}
 
 }

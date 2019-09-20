@@ -39,13 +39,13 @@ public class HeatMap extends View {
   }
 
   /** Represents the parameters of a spread. */
-  private static final class Spread {
+  public static final class Spread {
     /* Member Variables.  */
     private final float mX;
     private final float mY;
     private final float mIntensity;
     /* Constructor. */
-    private Spread(final float pX, final float pY, final float pIntensity) {
+    public Spread(final float pX, final float pY, final float pIntensity) {
       // Initialize Member Variables.
       this.mX         = pX;
       this.mY         = pY;
@@ -158,7 +158,7 @@ public class HeatMap extends View {
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity) {
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final List<Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity) {
     // Allocate the circle to render against.
     final Bitmap lCircle = HeatMap.radius(
       pRadius
@@ -177,9 +177,7 @@ public class HeatMap extends View {
     // Clear the Canvas.
     pCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
     // Draw a greyscale heatmap by placing a blurred circle at each data point.
-    for (final Entry<String, Spread> lEntry : pSpreads.entrySet()) {
-      // Fetch the point data.
-      final Spread lPoint = lEntry.getValue();
+    for (final Spread lPoint : pSpreads) {
       // Compute the Alpha to render the circle at.
       final int lAlpha = Math.round(Math.min(Math.max(lPoint.getIntensity() / pMax, pMinOpacity), 1) * 255);
       // Set the Alpha.
@@ -236,7 +234,7 @@ public class HeatMap extends View {
   private       float               mMax;
   private       float               mRadius;
   private final Map<Float, Integer> mGradient;
-  private final Map<String, Spread> mSpreads;
+  private final List<Spread>        mSpreads;
   private       float               mMinOpacity;
 
   /* Constructor. */
@@ -250,15 +248,17 @@ public class HeatMap extends View {
     this.mMax          = HeatMap.DEFAULT_MAX;
     this.mRadius       = HeatMap.DEFAULT_RADIUS;
     this.mGradient     = HeatMap.DEFAULT_GRADIENT;
-    this.mSpreads      = new HashMap<>();
+    this.mSpreads      = new ArrayList<>();
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
 
     for (int i = 0; i < 2000; i += 1) {
-      this.getSpreads().put((""+i), new Spread(
-        (float)(Math.random() * 1000),
-        (float)(Math.random() * 2000),
-        (float)Math.random()
-      ));
+      this.getSpreads().add(
+        new Spread(
+          (float)(Math.random() * 1000),
+          (float)(Math.random() * 2000),
+          (float)Math.random()
+        )
+      );
     }
 
   }
@@ -329,7 +329,7 @@ public class HeatMap extends View {
     return this.mCanvasHeight;
   }
 
-  private final Map<String, Spread> getSpreads() {
+  private final List<Spread> getSpreads() {
     return this.mSpreads;
   }
 
