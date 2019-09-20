@@ -17,7 +17,6 @@ import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
 import android.view.View;  
 import android.view.ViewGroup.LayoutParams;
-
 import android.util.Log;
 
 import java.util.Map;
@@ -27,7 +26,8 @@ import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Collections;
 
-@ReactModule(name = HeatMapManager.REACT_CLASS)
+import javax.annotation.Nullable;
+
 public class HeatMap extends View {  
 
   /* Base Declarations. */
@@ -332,6 +332,11 @@ public class HeatMap extends View {
 
   private final float getRadius() {
     return this.mRadius;
+  }
+
+  public final void setMax(final float pMax) {
+    this.mMax = pMax;
+    this.invalidate();
   }
 
   private final float getMax() {
