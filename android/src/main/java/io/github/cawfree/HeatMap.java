@@ -64,7 +64,6 @@ public class HeatMap extends View {
   } 
 
   /* Static Declarations. */
-  private static final float               DEFAULT_BLUR        = 30f;
   private static final float               DEFAULT_MAX         = 1f;
   private static final float               DEFAULT_RADIUS      = 25f;
   private static final float               DEFAULT_MIN_OPACITY = 0.05f;
@@ -79,29 +78,29 @@ public class HeatMap extends View {
         }}
       );
 
-  private static final Bitmap radius(final float pRadius, final float pBlur) {
-    final float       lRadius = pRadius + pBlur;
-    final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(lRadius) * 2, Math.round(lRadius) * 2, Bitmap.Config.ARGB_8888);
+  /** Renders a monochrome gradient circle, which is rendered at each point position. */
+  private static final Bitmap radius(final float pRadius) {
+    // Allocate the Bitmap. (Support transparency.)
+    final Bitmap      lBitmap = Bitmap.createBitmap(Math.round(pRadius) * 2, Math.round(pRadius) * 2, Bitmap.Config.ARGB_8888);
+    // Wrap the Bitmap in a Canvas so we can draw to it.
     final Canvas      lCanvas = new Canvas(lBitmap);
+    // Allocate the Paint.
     final Paint lPaint = new Paint();
-
-    lPaint.setStyle(
-      Paint.Style.FILL
-    );
-    
+    // Ensure we render using a fill.
+    lPaint.setStyle(Paint.Style.FILL);
+    // Allocate a Radial Gradient for the circle radius.
     final RadialGradient lRadialGradient = new RadialGradient(
-      lRadius,
-      lRadius,
-      lRadius,
+      pRadius,
+      pRadius,
+      pRadius,
       new int[] { Color.BLACK, Color.TRANSPARENT },
       new float[] { 0.0f, 1.0f },
       TileMode.CLAMP
     );
-
     // Use the RadialGradient to render the intensity of this point.
     lPaint.setShader(lRadialGradient); 
     // Render the sphere within a rectangle.
-    lCanvas.drawRect(0, 0, lRadius * 2, lRadius * 2, lPaint); 
+    lCanvas.drawRect(0, 0, pRadius * 2, pRadius * 2, lPaint); 
     // Return the Bitmap.
     return lBitmap;
   } 
@@ -112,29 +111,29 @@ public class HeatMap extends View {
     final Bitmap        lBitmap    = Bitmap.createBitmap(1, 256, Bitmap.Config.ARGB_8888);
     final Canvas        lCanvas    = new Canvas(lBitmap);
     final List<Integer> lColors    = new ArrayList<>(pGradient.size());
-    //final List<Float>   lPositions = new ArrayList<>(pGradient.size());
     // Fetch the Map Entries.
     final List<Float> lKeys = new ArrayList<>(pGradient.keySet());
-    // TODO: sort these entries!!!
+    // Sort the keys in order.
     Collections
       .sort(
         lKeys
       );
-
+    // Allocate the Buffers to interpolate the gradient threshold.
     final float[] lProgress = new float[lKeys.size()];
     final int[]   lVecColors  = new int[lKeys.size()];
-
+    // Iterate the sorted keys.
     for (int i = 0; i < lKeys.size(); i += 1) {
+      // Fetch the progression.
       final Float lKey = lKeys.get(i);
+      // Allocate the key.
       lProgress[i] = (float)lKey;
+      // Allocate the corresponding color.
       lVecColors[i] = (int)pGradient.get(lKey);
     }
-    //for (final Float lKey : lKeys) {
-    //  lVecColors[
-    //  lColors.put(pGradient.get(lKey));
-    //}
-
-    final LinearGradient lLinearGradient = new LinearGradient(
+    // Allocate some Paint.
+    final Paint lPaint = new Paint();
+    // Allocate the Shader.
+    final Shader lShader = new LinearGradient(
       0,
       0,
       1,
@@ -143,22 +142,19 @@ public class HeatMap extends View {
       lProgress,
       TileMode.CLAMP
     );
-
-    final Paint lPaint = new Paint();
-    Shader shader = lLinearGradient;//new LinearGradient(0, 0, 0, 256, Color.GREEN, Color.RED, TileMode.CLAMP);
-    lPaint.setShader(shader); 
-    //lPaint.setColor(Color.RED);
+    // Use the LinearGradient.
+    lPaint.setShader(lShader); 
+    // Render the LinearGradient against a rectangle.
     lCanvas.drawRect(0, 0, 1, 256, lPaint); 
-
+    // Return the allocated.
     return lBitmap;
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final float pBlur) {
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Map<String, Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity) {
     // Allocate the circle to render against.
     final Bitmap lCircle = HeatMap.radius(
-      pRadius,
-      pBlur
+      pRadius
     );
     final Bitmap lGradient = HeatMap.gradient(
       pGradient
@@ -235,7 +231,6 @@ public class HeatMap extends View {
   private final Map<Float, Integer> mGradient;
   private final Map<String, Spread> mSpreads;
   private       float               mMinOpacity;
-  private       float               mBlur;
 
   /* Constructor. */
   public HeatMap(final Context pContext) {
@@ -250,7 +245,6 @@ public class HeatMap extends View {
     this.mGradient     = HeatMap.DEFAULT_GRADIENT;
     this.mSpreads      = new HashMap<>();
     this.mMinOpacity   = HeatMap.DEFAULT_MIN_OPACITY;
-    this.mBlur         = HeatMap.DEFAULT_BLUR;
 
     for (int i = 0; i < 2000; i += 1) {
       this.getSpreads().put((""+i), new Spread(
@@ -294,8 +288,7 @@ public class HeatMap extends View {
         this.getGradient(),
         this.getRadius(),
         this.getMax(),
-        this.getMinOpacity(),
-        this.getBlur()
+        this.getMinOpacity()
       );
   
       // Write the resulting bitmap to the global Canvas.
@@ -347,10 +340,6 @@ public class HeatMap extends View {
 
   private final float getMinOpacity() {
     return this.mMinOpacity;
-  }
-
-  private final float getBlur() {
-    return this.mBlur;
   }
 
 }  
