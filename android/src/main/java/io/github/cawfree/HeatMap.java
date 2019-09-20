@@ -158,7 +158,7 @@ public class HeatMap extends View {
   }
 
   /** Renders the HeatMap. */
-  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Bitmap pCircle, final Bitmap pInterpolated, final List<Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final int[] pBuffer, final int[] pPixels) {
+  private static final void draw(final Canvas pCanvas, final Bitmap pBitmap, final Bitmap pCircle, final Bitmap pInterpolated, final List<Spread> pSpreads, final Map<Float, Integer> pGradient, final float pRadius, final float pMax, final float pMinOpacity, final int[] pBuffer, final int[] pPixels, final double[] pRegion) {
     // Fetch the interpolated pixels.
     pInterpolated.getPixels(pBuffer, 0, 1, 0, 0, 1, 256);
     // Allocate the Paint instance.
@@ -171,16 +171,52 @@ public class HeatMap extends View {
       final int lAlpha = Math.round(Math.min(Math.max(lPoint.getIntensity() / pMax, pMinOpacity), 1) * 255);
       // Set the Alpha.
       lPaint.setAlpha(lAlpha);
-      // Bit-blit the Bitmap contents for this position into the buffer.
-      pCanvas
-        .drawBitmap(
-          pCircle,
-          // TODO: top left corner defines render position
-          lPoint.getX() - pRadius,
-          lPoint.getY() - pRadius,
-          // Draw using the supplied Paint.
-          lPaint
+      // Fetch region data.
+      final double lLatitude = pRegion[0];
+      final double lLongitude = pRegion[1];
+      final double lLatitudeDelta = pRegion[2];
+      final double lLongitudeDelta = pRegion[3];
+      // Should we scale the supplied co-ordinates?
+      if (pRegion != null) {
+        // Allocate a MercatorMap.
+        final MercatorMap lMercatorMap = new MercatorMap(
+          pBitmap.getWidth(),
+          pBitmap.getHeight(),
+          (float)(lLatitude - (lLatitudeDelta * 0.5f)),
+          (float)(lLatitude + (lLatitudeDelta * 0.5f)),
+          (float)(lLongitude - (lLongitudeDelta * 0.5f)),
+          (float)(lLongitude + (lLongitudeDelta * 0.5f))
         );
+        // Fetch the Point Coordinates.
+        final float lPointLongitude = lPoint.getX();
+        final float lPointLatitude  = lPoint.getY();
+        // Fetch the corresponding X and Y.
+        final float lScreenX = lMercatorMap
+            .getScreenX(lPointLongitude);
+        final float lScreenY = lMercatorMap
+            .getScreenY(lPointLatitude);
+        pCanvas
+          .drawBitmap(
+            pCircle,
+            // TODO: top left corner defines render position
+            lScreenX - pRadius,
+            lScreenY - pRadius,
+            // Draw using the supplied Paint.
+            lPaint
+          );
+
+      } else {
+        // Bit-blit the Bitmap contents for this position into the buffer.
+        pCanvas
+          .drawBitmap(
+            pCircle,
+            // TODO: top left corner defines render position
+            lPoint.getX() - pRadius,
+            lPoint.getY() - pRadius,
+            // Draw using the supplied Paint.
+            lPaint
+          );
+      }
     }
     // Buffer the Pixel content of the global bitmap into the Pixels.
     pBitmap.getPixels(pPixels, 0, pBitmap.getWidth(), 0, 0, pBitmap.getWidth(), pBitmap.getHeight());
@@ -226,6 +262,7 @@ public class HeatMap extends View {
   private       Bitmap              mInterpolated;
   private final int[]               mBuffer;
   private       int[]               mPixels;
+  private       double[]            mRegion;
 
   /* Constructor. */
   public HeatMap(final Context pContext) {
@@ -245,6 +282,7 @@ public class HeatMap extends View {
     this.mInterpolated = HeatMap.gradient(HeatMap.DEFAULT_GRADIENT);
     this.mBuffer       = new int[256];
     this.mPixels       = new int[0];
+    this.mRegion       = null;
   }
 
   @Override
@@ -298,7 +336,8 @@ public class HeatMap extends View {
         this.getMax(),
         this.getMinOpacity(),
         this.getBuffer(),
-        this.getPixels()
+        this.getPixels(),
+        this.getRegion()
       );
   
       // Write the resulting bitmap to the global Canvas.
@@ -424,6 +463,16 @@ public class HeatMap extends View {
 
   private final int[] getPixels() {
     return this.mPixels;
+  }
+
+  // latitude, longitude, latitudeDelta, longitudeDelta
+  public final void setRegion(final double[] pRegion) {
+    this.mRegion = pRegion;
+    this.invalidate();
+  }
+
+  private final double[] getRegion() {
+    return this.mRegion;
   }
 
 }  

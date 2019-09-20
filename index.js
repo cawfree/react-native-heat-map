@@ -10,21 +10,26 @@ class HeatMap extends React.Component {
     const {
       data,
       radius,
+      region,
       ...extraProps
     } = this.props;
+    const transformedData = !region ? (
+      data.map(
+        ([ x, y, ...extras ]) => (
+          [
+            x * PixelRatio.get(),
+            y * PixelRatio.get(),
+            ...extras,
+          ]
+        ),
+      )
+    ) : data;
     return (
       <NativeHeatMap
         {...extraProps}
         radius={radius * PixelRatio.get()}
-        data={data.map(
-          ([ x, y, ...extras ]) => (
-            [
-              x * PixelRatio.get(),
-              y * PixelRatio.get(),
-              ...extras,
-            ]
-          ),
-        )}
+        data={transformedData}
+        region={region}
       />
     );
   }
@@ -37,6 +42,7 @@ HeatMap.propTypes = {
   gradient: PropTypes.shape({}),
   data: PropTypes.shape({}),
   minOpacity: PropTypes.number,
+  region: PropTypes.shape({}),
 };
 
 HeatMap.defaultProps = {
@@ -58,6 +64,7 @@ HeatMap.defaultProps = {
     ],
   ],
   minOpacity: 0.05,
+  region: null,
 };
 
 export default HeatMap;

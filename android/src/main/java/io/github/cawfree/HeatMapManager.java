@@ -51,6 +51,23 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
     pHeatMap.setRadius(Math.max(pRadius, 1f));
   }
 
+  @ReactProp(name = "region")
+  public final void setRegion(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
+    if (pReadableMap == null) {
+      // Remove the Region.
+      pHeatMap.setRegion(null);
+    } else {
+      pHeatMap.setRegion(
+        new double[] {
+          pReadableMap.getDouble("latitude"),
+          pReadableMap.getDouble("longitude"),
+          pReadableMap.getDouble("latitudeDelta"),
+          pReadableMap.getDouble("longitudeDelta"),
+        }
+      );
+    }
+  }
+
   //@ReactProp(name = "gradient")
   //public final void setGradient(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
   //  if (pReadableMap == null) {
@@ -72,9 +89,9 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
       // Allocate a HeatMap.Spread.
       lSpreads.add(
         new HeatMap.Spread(
-          (float)lReadableArray.getDouble(0),
-          (float)lReadableArray.getDouble(1),
-          (float)lReadableArray.getDouble(2)
+          (float)lReadableArray.getDouble(0), // x (longitude)
+          (float)lReadableArray.getDouble(1), // y (latitude)
+          (float)lReadableArray.getDouble(2)  // z (intensity)
         )
       );
     }

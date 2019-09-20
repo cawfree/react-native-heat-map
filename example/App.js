@@ -8,15 +8,20 @@ export default class App extends Component<{}> {
     radius: 60,
     data: [
       [
-        100,
-        100,
-        10,
+        53.4139281, // longitude
+        -3.0118499, // latitude
+        10, // intensity
       ],
-      [
-        200,
-        200,
-        10,
-      ],
+      //[
+      //  100,
+      //  100,
+      //  10,
+      //],
+      //[
+      //  200,
+      //  200,
+      //  10,
+      //],
     ],
     panResponder: PanResponder
     .create(
@@ -92,6 +97,12 @@ export default class App extends Component<{}> {
           max={max}
           radius={radius}
           data={data}
+          region={{
+            latitude: -3.0118499,
+            longitude: 53.4139281,
+            latitudeDelta: 1,
+            longitudeDelta: 1,
+          }}
         />
       </View>
     );
