@@ -182,24 +182,21 @@ public class HeatMap extends View {
         final MercatorMap lMercatorMap = new MercatorMap(
           pBitmap.getWidth(),
           pBitmap.getHeight(),
-          (float)(lLatitude - (lLatitudeDelta * 0.5f)),
           (float)(lLatitude + (lLatitudeDelta * 0.5f)),
+          (float)(lLatitude - (lLatitudeDelta * 0.5f)),
           (float)(lLongitude - (lLongitudeDelta * 0.5f)),
           (float)(lLongitude + (lLongitudeDelta * 0.5f))
         );
-        // Fetch the Point Coordinates.
-        final float lPointLongitude = lPoint.getX();
-        final float lPointLatitude  = lPoint.getY();
         // Fetch the corresponding X and Y.
         final float lScreenX = lMercatorMap
-            .getScreenX(lPointLongitude);
+            .getScreenX(lPoint.getY());
         final float lScreenY = lMercatorMap
-            .getScreenY(lPointLatitude);
+            .getScreenY(lPoint.getX());
         pCanvas
           .drawBitmap(
             pCircle,
             // TODO: top left corner defines render position
-            lScreenX - pRadius,
+            lScreenX - pRadius, // does the radius need to be scaled?
             lScreenY - pRadius,
             // Draw using the supplied Paint.
             lPaint

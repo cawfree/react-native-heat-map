@@ -100,8 +100,8 @@ export default class App extends Component<{}> {
           region={{
             latitude: -3.0118499,
             longitude: 53.4139281,
-            latitudeDelta: 1,
-            longitudeDelta: 1,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
           }}
         />
       </View>
