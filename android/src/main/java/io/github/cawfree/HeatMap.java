@@ -189,9 +189,9 @@ public class HeatMap extends View {
         );
         // Fetch the corresponding X and Y.
         final float lScreenX = lMercatorMap
-            .getScreenX(lPoint.getY());
+            .getScreenX(lPoint.getX());
         final float lScreenY = lMercatorMap
-            .getScreenY(lPoint.getX());
+            .getScreenY(lPoint.getY());
         pCanvas
           .drawBitmap(
             pCircle,
