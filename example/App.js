@@ -147,16 +147,16 @@ export default class App extends Component<{}> {
           max={max}
           radius={radius}
           data={data} 
-
+          region={{
+            latitude: -3.0118499,
+            longitude: 53.4139281,
+            latitudeDelta: 0.02,
+            longitudeDelta: 0.02,
+          }}
         />
       </View>
     );
   }
 }
 
-//region={{
-//            latitude: -3.0118499,
-//            longitude: 53.4139281,
-//            latitudeDelta: 0.02,
-//            longitudeDelta: 0.02,
-//          }}
+

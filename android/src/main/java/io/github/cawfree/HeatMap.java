@@ -208,8 +208,8 @@ public class HeatMap extends View {
           .drawBitmap(
             pCircle,
             // TODO: top left corner defines render position
-            (lScreenX / DOWNSAMPLE) - pRadius, // does the radius need to be scaled?
-            (lScreenY / DOWNSAMPLE) - pRadius,
+            lScreenX - pRadius, // does the radius need to be scaled?
+            lScreenY - pRadius,
             // Draw using the supplied Paint.
             lPaint
           );
