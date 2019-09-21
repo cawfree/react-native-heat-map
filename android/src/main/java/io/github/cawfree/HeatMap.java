@@ -82,7 +82,7 @@ public class HeatMap extends View {
   private static final Bitmap createBitmap(final float pWidth, final float pHeight) {
     final int lWidth = Math.max(1, (int)Math.ceil(pWidth));
     final int lHeight = Math.max(1, (int)Math.ceil(pHeight));
-    return Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_8888);
+    return Bitmap.createBitmap(lWidth, lHeight, Bitmap.Config.ARGB_4444);
   }
 
   /** Renders a monochrome gradient circle, which is rendered at each point position. */
