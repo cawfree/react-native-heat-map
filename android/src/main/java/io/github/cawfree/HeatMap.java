@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Paint;  
 import android.graphics.PorterDuff;
 import android.graphics.Shader;
+import android.graphics.Rect;
 import android.graphics.Shader.TileMode;
 import android.view.View;  
 import android.view.ViewGroup.LayoutParams;
@@ -29,6 +30,8 @@ import java.util.Collections;
 import javax.annotation.Nullable;
 
 public class HeatMap extends View {  
+
+  private static final int DOWNSAMPLE = 16;
 
   /* Base Declarations. */
   private static String TAG = "HeatMap";
@@ -205,8 +208,8 @@ public class HeatMap extends View {
           .drawBitmap(
             pCircle,
             // TODO: top left corner defines render position
-            lScreenX - pRadius, // does the radius need to be scaled?
-            lScreenY - pRadius,
+            (lScreenX / DOWNSAMPLE) - pRadius, // does the radius need to be scaled?
+            (lScreenY / DOWNSAMPLE) - pRadius,
             // Draw using the supplied Paint.
             lPaint
           );
@@ -217,8 +220,8 @@ public class HeatMap extends View {
           .drawBitmap(
             pCircle,
             // TODO: top left corner defines render position
-            lPoint.getX() - pRadius,
-            lPoint.getY() - pRadius,
+            (lPoint.getX() / DOWNSAMPLE) - pRadius,
+            (lPoint.getY() / DOWNSAMPLE) - pRadius,
             // Draw using the supplied Paint.
             lPaint
           );
@@ -319,14 +322,14 @@ public class HeatMap extends View {
       // Attempt to fetch the existing Bitmap.
       Bitmap lBitmap = this.getBitmap();
       // Do we need to make a new Bitmap?
-      if (lBitmap == null || this.getCanvasWidth() != lBitmap.getWidth() || this.getCanvasHeight() != lBitmap.getHeight()) {
+      if (lBitmap == null || this.getCanvasWidth() / DOWNSAMPLE != lBitmap.getWidth() || this.getCanvasHeight() / DOWNSAMPLE != lBitmap.getHeight()) {
         // Assign the Bitmap;
         lBitmap = HeatMap.createBitmap(
-          this.getCanvasWidth(),
-          this.getCanvasHeight()
+          this.getCanvasWidth() / DOWNSAMPLE,
+          this.getCanvasHeight() / DOWNSAMPLE
         );
         this.setPixels(
-          new int[this.getCanvasWidth() * this.getCanvasHeight()]
+          new int[(this.getCanvasWidth() / DOWNSAMPLE) * (this.getCanvasHeight() / DOWNSAMPLE)]
         );
         this.setBitmap(
           lBitmap
@@ -343,7 +346,7 @@ public class HeatMap extends View {
         this.getInterpolated(),
         this.getSpreads(),
         this.getGradient(),
-        this.getRadius(),
+        this.getRadius() / DOWNSAMPLE,
         this.getMax(),
         this.getMinOpacity(),
         this.getBuffer(),
@@ -354,8 +357,18 @@ public class HeatMap extends View {
       // Write the resulting bitmap to the global Canvas.
       pCanvas.drawBitmap(
         lBitmap,
-        0,
-        0,
+        new Rect(
+          0,
+          0,
+          this.getCanvasWidth() / DOWNSAMPLE,
+          this.getCanvasHeight() / DOWNSAMPLE
+        ),
+        new Rect(
+          0,
+          0,
+          this.getCanvasWidth(),
+          this.getCanvasHeight()
+        ),
         null
       );
     }
@@ -403,7 +416,7 @@ public class HeatMap extends View {
     }
     this.setCircle(
       HeatMap.radius(
-        pRadius
+        pRadius / DOWNSAMPLE
       )
     );
     this.invalidate();
