@@ -6,6 +6,13 @@ import normalizeColor from 'react-native/Libraries/Color/normalizeColor.js';
 const NativeHeatMap = requireNativeComponent('HeatMap', null);
 
 class HeatMap extends React.Component {
+  setNativeProps(...rest) {
+    const { nativeHeatMap } = this.refs;
+    return nativeHeatMap
+      .setNativeProps(
+        ...rest,
+      );
+  }
   render() {
     const {
       data,
@@ -27,6 +34,7 @@ class HeatMap extends React.Component {
     return (
       <NativeHeatMap
         {...extraProps}
+        ref="nativeHeatMap"
         radius={radius * PixelRatio.get()}
         data={transformedData}
         region={region}

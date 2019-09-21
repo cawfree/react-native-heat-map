@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
-import { PanResponder, Alert, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
+import { Animated, PanResponder, Alert, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
 import HeatMap from 'react-native-heat-map';
 
 export default class App extends Component<{}> {
   state = {
+    animValue: new Animated.Value(
+      0,
+    ),
     max: 1.0,
     radius: 60,
     data: [
@@ -54,27 +57,51 @@ export default class App extends Component<{}> {
       },
     ),
   };
-  //componentDidMount() {
-  //  const t = new Date().getTime();
-  //  setInterval(
-  //    () => {
-  //      this.setState(
-  //        {
-  //          radius: (this.state.radius + 1) % 60,
-  //          data: [
-  //            ...this.state.data,
-  //            [
-  //              Math.random() * 100,
-  //              Math.random() * 100,
-  //              1,
-  //            ],
-  //          ],
-  //        },
-  //      );
-  //    },
-  //    0,
-  //  );
-  //}
+  componentDidMount() {
+    const { heatMap } = this.refs;
+    const { animValue } = this.state;
+    animValue.addListener(
+      ({ value }) => (
+        heatMap
+          .setNativeProps(
+            {
+              radius: value * 60,
+              max: value,
+            },
+          )
+      ),
+    );
+    Animated
+      .timing(
+        animValue,
+        {
+          toValue: 1,
+          useNativeDriver: true,
+          duration: 3000,
+        },
+      )
+      .start();
+    //const t = new Date().getTime();
+    //setInterval(
+    //  () => {
+
+    //    //this.setState(
+    //    //  {
+    //    //    radius: (this.state.radius + 1) % 60,
+    //    //    data: [
+    //    //      ...this.state.data,
+    //    //      [
+    //    //        Math.random() * 100,
+    //    //        Math.random() * 100,
+    //    //        1,
+    //    //      ],
+    //    //    ],
+    //    //  },
+    //    //);
+    //  },
+    //  0,
+    //);
+  }
   render() {
     const {
       max,
@@ -90,6 +117,7 @@ export default class App extends Component<{}> {
         }}
       >
         <HeatMap
+          ref="heatMap"
           {...panResponder.panHandlers}
           style={{
             flex: 1,
