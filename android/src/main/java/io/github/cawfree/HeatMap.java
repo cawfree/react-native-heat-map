@@ -165,10 +165,19 @@ public class HeatMap extends View {
     final Paint lPaint = new Paint(); 
     // Clear the Canvas.
     pCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+    // Compute the inverse of the maximum.
+    final float lInvMax = 1 / pMax;
     // Draw a greyscale heatmap by placing a blurred circle at each data point.
     for (final Spread lPoint : pSpreads) {
       // Compute the Alpha to render the circle at.
-      final int lAlpha = Math.round(Math.min(Math.max(lPoint.getIntensity() / pMax, pMinOpacity), 1) * 255);
+      final int lAlpha = Math.round(
+        Math.min(
+          Math.max(
+            lPoint.getIntensity() * lInvMax,
+            pMinOpacity
+          ),
+          1
+        ) * 255);
       // Set the Alpha.
       lPaint.setAlpha(lAlpha);
       // Should we scale the supplied co-ordinates?
@@ -225,23 +234,24 @@ public class HeatMap extends View {
 
   /** Applies the gradient threshold to the Bitmap pixel data. */
   private static final void colorize(final int[] pPixels, final int[] pInterpolated) {
+    int lPixel;
+    int lIsolated;
+    int lAlpha;
+    int j;
     // Iterate the Pixels.
     for (int i = 0; i < pPixels.length; i += 1) {
       // Fetch the current pixel.
-      final int lPixel = pPixels[i];
+      lPixel = pPixels[i];
       // Isolate the alpha component. (ARGB)
-      final int lIsolated = lPixel & 0xFF000000;
-      // Has the pixel got an alpha value?
+      lIsolated = lPixel & 0xFF000000;
       // Compute the alpha.
-      final int lAlpha = 0xFF & (lIsolated >> 24);
-      // Fetch the Interpolated Pixel.
-      final int j = pInterpolated[lAlpha];
-      //// Are we handling a rendered pixel?
+      lAlpha = 0xFF & (lIsolated >> 24);
+      // Are we handling a rendered pixel?
       if (lAlpha > 0) {
+        // Fetch the Interpolated Pixel.
+        j = pInterpolated[lAlpha];
         // Assign the color for this index.
-        pPixels[i] = j;
-        // Ensure the opacity is propagated.
-        pPixels[i] &= (lIsolated | 0x00FFFFFF);
+        pPixels[i] = j & (lIsolated | 0x00FFFFFF);
       }
     }
   }
@@ -311,7 +321,10 @@ public class HeatMap extends View {
       // Do we need to make a new Bitmap?
       if (lBitmap == null || this.getCanvasWidth() != lBitmap.getWidth() || this.getCanvasHeight() != lBitmap.getHeight()) {
         // Assign the Bitmap;
-        lBitmap = HeatMap.createBitmap(this.getCanvasWidth(), this.getCanvasHeight());
+        lBitmap = HeatMap.createBitmap(
+          this.getCanvasWidth(),
+          this.getCanvasHeight()
+        );
         this.setPixels(
           new int[this.getCanvasWidth() * this.getCanvasHeight()]
         );
@@ -319,12 +332,8 @@ public class HeatMap extends View {
           lBitmap
         );
       }
-      // TODO: should verify the width and height before attempting to do this.
-  
-      //final Bitmap lBitmap = ;
+
       final Canvas lCanvas = new Canvas(lBitmap);
-  
-      // TODO: Delegate Pain object for performance.
   
       // Render the Heatmap to the local Canvas.
       HeatMap.draw(
@@ -347,11 +356,8 @@ public class HeatMap extends View {
         lBitmap,
         0,
         0,
-        new Paint()
+        null
       );
-
-      // Recycle the allocated Bitmap.
-      //lBitmap.recycle();
     }
 
   }
@@ -467,7 +473,6 @@ public class HeatMap extends View {
     return this.mPixels;
   }
 
-  // latitude, longitude, latitudeDelta, longitudeDelta
   public final void setRegion(final double[] pRegion) {
     this.mRegion = pRegion;
     this.invalidate();
