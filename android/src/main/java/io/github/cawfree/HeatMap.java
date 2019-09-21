@@ -265,6 +265,11 @@ public class HeatMap extends View {
   public HeatMap(final Context pContext) {
     // Implement the parent.
     super(pContext);
+    // Enable Hardware Acceleration.
+    this.setLayerType(
+      View.LAYER_TYPE_HARDWARE,
+      null
+    );
     // Initialize Member Variables.
     this.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
     this.mCanvasWidth  = 0;

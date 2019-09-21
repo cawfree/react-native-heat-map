@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { Animated, PanResponder, Alert, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
+import { PixelRatio, Animated, PanResponder, Alert, TouchableOpacity, Platform, StyleSheet, Text, View } from 'react-native';
 import HeatMap from 'react-native-heat-map';
+
+const data = [];
 
 export default class App extends Component<{}> {
   state = {
@@ -33,23 +35,43 @@ export default class App extends Component<{}> {
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: ({ nativeEvent }) => {
           const { changedTouches } = nativeEvent;
-          this.setState(
-            {
-              data: [
-                ...this.state.data,
-                ...changedTouches
-                .map(
-                  ({ locationX, locationY }) => {
-                    return [
-                      locationX,
-                      locationY,
-                      1,
-                    ];
-                  },
-                ),
-              ],
-            },
+          data.push(
+            ...changedTouches
+              .map(
+                 ({ locationX, locationY }) => {
+                   return [
+                     locationX * PixelRatio.get(),
+                     locationY * PixelRatio.get(),
+                     1,
+                   ];
+                 },
+               ),
+   
           );
+          this.refs.heatMap
+            .setNativeProps(
+              {
+                data: [...data],
+                radius: 60 * PixelRatio.get(),
+              },
+            );
+          //this.setState(
+          //  {
+          //    data: [
+          //      ...this.state.data,
+          //      ...changedTouches
+          //      .map(
+          //        ({ locationX, locationY }) => {
+          //          return [
+          //            locationX,
+          //            locationY,
+          //            1,
+          //          ];
+          //        },
+          //      ),
+          //    ],
+          //  },
+          //);
         },
         onPanResponderRelease: () => this.setState({
           data: [],
@@ -59,28 +81,28 @@ export default class App extends Component<{}> {
   };
   componentDidMount() {
     const { heatMap } = this.refs;
-    const { animValue } = this.state;
-    animValue.addListener(
-      ({ value }) => (
-        heatMap
-          .setNativeProps(
-            {
-              radius: value * 60,
-              max: value,
-            },
-          )
-      ),
-    );
-    Animated
-      .timing(
-        animValue,
-        {
-          toValue: 1,
-          useNativeDriver: true,
-          duration: 3000,
-        },
-      )
-      .start();
+    //const { animValue } = this.state;
+    //animValue.addListener(
+    //  ({ value }) => (
+    //    heatMap
+    //      .setNativeProps(
+    //        {
+    //          radius: value * 60,
+    //          max: value,
+    //        },
+    //      )
+    //  ),
+    //);
+    //Animated
+    //  .timing(
+    //    animValue,
+    //    {
+    //      toValue: 1,
+    //      useNativeDriver: true,
+    //      duration: 3000,
+    //    },
+    //  )
+    //  .start();
     //const t = new Date().getTime();
     //setInterval(
     //  () => {
@@ -131,6 +153,7 @@ export default class App extends Component<{}> {
             latitudeDelta: 0.02,
             longitudeDelta: 0.02,
           }}
+
         />
       </View>
     );
