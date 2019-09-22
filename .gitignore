@@ -26,6 +26,7 @@ ios/main.jsbundle
 ios/main.jsbundle.meta
 ios/Pods/
 ios/Podfile.lock
+example/ios/Pods
 
 # Gradle
 /build/

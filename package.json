@@ -1,8 +1,8 @@
 {
   "name": "react-native-heat-map",
   "title": "React Native Heat Map",
-  "version": "0.0.0",
-  "description": "TODO",
+  "version": "0.0.1",
+  "description": "A <HeatMap /> Native Module component for React Native.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
