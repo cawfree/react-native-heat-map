@@ -1,5 +1,4 @@
 #import <React/RCTViewManager.h>
-#import <LFHeatMap.h>
 #import <UIKit/UIKit.h>
 #import <react-native-heat-map/HeatMapWrapper.h>
 
