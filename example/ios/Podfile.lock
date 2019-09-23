@@ -21,10 +21,12 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - LFHeatMap (1.0.2)
   - React (0.59.10):
     - React/Core (= 0.59.10)
   - react-native-heat-map (0.0.1):
     - AFNetworking (~> 3.0)
+    - LFHeatMap (~> 1.0.2)
     - React
   - React/Core (0.59.10):
     - yoga (= 0.59.10.React)
@@ -113,6 +115,7 @@ SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
     - boost-for-react-native
+    - LFHeatMap
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -134,8 +137,9 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
+  LFHeatMap: 433197b20e4d57a9502bc2a2a21300fa851ff3c6
   React: 36d0768f9e93be2473b37e7fa64f92c1d5341eef
-  react-native-heat-map: 184f889748ed982ad6e353d3f8c5b0fe392eb9a2
+  react-native-heat-map: 2d0f5f97fdd7836c81a9b31a02b2a99bd84233b2
   yoga: 684513b14b03201579ba3cee20218c9d1298b0cc
 
 PODFILE CHECKSUM: 74e44c47895c30b697c777cb91eab89aefb48a3c
