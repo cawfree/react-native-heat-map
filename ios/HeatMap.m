@@ -16,7 +16,9 @@ RCT_EXPORT_MODULE()
 
 RCT_CUSTOM_VIEW_PROPERTY(data, NSDictionary, HeatMapWrapper)
 {
-    NSLog(@"got some data");
+    
+    NSDictionary *dictionary = [RCTConvert NSDictionary:json];
+    NSLog(@"%@", dictionary);
 }
 //
 //RCT_CUSTOM_VIEW_PROPERTY(gradient, NSDictionary, HeatMapWrapper)
