@@ -6,7 +6,7 @@
 
 @interface HeatMapWrapper : UIView
 
-@property (strong, nonatomic) UIView *imageView;
+@property (strong, nonatomic) UIImageView *imageView;
 
 @end
 
