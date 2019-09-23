@@ -13,10 +13,7 @@ RCT_EXPORT_MODULE()
 RCT_CUSTOM_VIEW_PROPERTY(region, NSDictionary, HeatMapWrapper)
 {
     NSDictionary *dictionary = [RCTConvert NSDictionary:json];
-    CGFloat latitude = [[dictionary valueForKey:@"latitude"] doubleValue];
-    CGFloat longitude = [[dictionary valueForKey:@"longitude"] doubleValue];
-    CGFloat latitudeDelta = [[dictionary valueForKey:@"latitudeDelta"] doubleValue];
-    CGFloat longitudeDelta = [[dictionary valueForKey:@"longitudeDelta"] doubleValue];
+    [_heatMapWrapper shouldUpdateRegion:dictionary];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(data, NSMutableArray, HeatMapWrapper)

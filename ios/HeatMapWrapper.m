@@ -12,9 +12,6 @@
         
         _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
-        _weights = [NSMutableArray arrayWithCapacity:1];
-        _points = [NSMutableArray arrayWithCapacity:1];
-        
         [self addSubview:_imageView];
     }
     return self;
@@ -26,49 +23,93 @@
 }
 
 - (void)shouldUpdateData:(NSArray*)data {
-    NSUInteger count = [data count];
-    [_points removeAllObjects];
-    [_weights removeAllObjects];
-    for (NSUInteger index = 0; index < count ; index++) {
-        NSArray *n = [data objectAtIndex:index];
-        float x = [[n objectAtIndex:0] doubleValue];
-        float y = [[n objectAtIndex:1] doubleValue];
-        float intensity = [[n objectAtIndex:2] doubleValue];
-        
-        [_points addObject:@(CGPointMake(x, y))];
-        [_weights addObject:@(intensity)];
-        
-//        NSLog(@"got x %f, y %f, intensity %f", 100, 100, intensity);
-        
-        
-//        id x = [data objectAtIndex:index];
-        
-//        CGFloat x = ;
-//        for(int i = 0; i < 10; i++) {
-//            [myArray addObject:@(i)];
-//        }
+    _data = data;
+}
 
-//        NSLog(@"got data %d", index);
-        //[self doSomethingWith:[myArray objectAtIndex:index]];
+- (void)shouldUpdateRegion:(NSDictionary*)region {
+    if (region != nil) {
+        _region = region;
+    } else {
+        _region = nil;
     }
 }
 
+- (float)getScreenYRelative:(float)latitudeInDegrees {
+    return (float)log(tan(latitudeInDegrees / 360.0f * M_PI + M_PI / 4));
+}
+
+- (float)getScreenY:(int)mapScreenHeight withLatitudeInDegrees: (float)latitudeInDegrees withTopLatitudeRelative: (float)topLatitudeRelative withBottomLatitudeRelative: (float)bottomLatitudeRelative {
+    float relativeLatitude = [self getScreenYRelative:latitudeInDegrees];
+    return mapScreenHeight * (relativeLatitude - topLatitudeRelative) / (bottomLatitudeRelative - topLatitudeRelative);
+}
+
+- (float)getRadians:(float)deg {
+    return (float)(deg * M_PI / 180);
+}
+
+- (float)getScreenX:(float)longitudeInDegrees withMapScreenWidth:(int)mapScreenWidth withRightLongitudeRadians:(float)rightLongitudeRadians withLeftLongitudeRadians:(float)leftLongitudeRadians {
+    float longitudeInRadians = [self getRadians:longitudeInDegrees];
+    return mapScreenWidth * (longitudeInRadians - leftLongitudeRadians) / (rightLongitudeRadians - leftLongitudeRadians);
+}
+
 - (void)shouldRenderHeatMap {
-    float boost = 1.0f;
-    float width = _imageView.bounds.size.width;
-    float height = _imageView.bounds.size.height;
     
-    if (width > 0 && height > 0) {
-        CGRect heatMapWithRect = CGRectMake(0, 0, width, height);
+    float boost = 1.0f;
+    float mapScreenWidth = _imageView.bounds.size.width;
+    float mapScreenHeight = _imageView.bounds.size.height;
+    
+    if (mapScreenWidth > 0 && mapScreenHeight > 0 && _data != nil) {
         
-//        _weights = @[@20];
-//        _points = [NSArray arrayWithObjects:[], nil];
+        NSUInteger count = [_data count];
+        NSMutableArray* points = [NSMutableArray arrayWithCapacity:count];
+        NSMutableArray* weights = [NSMutableArray arrayWithCapacity:count];
+        
+        for (NSUInteger index = 0; index < count ; index++) {
+            
+            NSArray *n = [_data objectAtIndex:index];
+            
+            float x = [[n objectAtIndex:0] doubleValue];
+            float y = [[n objectAtIndex:1] doubleValue];
+            float intensity = [[n objectAtIndex:2] doubleValue];
+            
+            if (_region != nil) {
+                float latitude = [[_region valueForKey:@"latitude"] doubleValue];
+                float longitude = [[_region valueForKey:@"longitude"] doubleValue];
+                float latitudeDelta = [[_region valueForKey:@"latitudeDelta"] doubleValue];
+                float longitudeDelta = [[_region valueForKey:@"longitudeDelta"] doubleValue];
+                float topLatitude = latitude + (latitudeDelta * 0.5f);
+                float bottomLatitude = latitude - (latitudeDelta * 0.5f);
+                float leftLongitude = longitude - (longitudeDelta * 0.5f);
+                float rightLongitude = longitude + (longitudeDelta * 0.5f);
+                
+                float topLatitudeRelatve = [self getScreenYRelative:topLatitude];
+                float bottomLatitudeRelative = [self getScreenYRelative:bottomLatitude];
+                float leftLongitudeRadians = [self getRadians:leftLongitude];
+                float rightLongitudeRadians = [self getRadians:rightLongitude];
+                
+                float px = [self getScreenX:longitude withMapScreenWidth:mapScreenWidth withRightLongitudeRadians:rightLongitudeRadians withLeftLongitudeRadians:leftLongitudeRadians];
+                
+                float py = [self getScreenY:mapScreenHeight withLatitudeInDegrees:latitude withTopLatitudeRelative:topLatitudeRelatve withBottomLatitudeRelative:bottomLatitudeRelative];
+                
+                NSLog(@"got %f, %f", px, py);
+                
+                [points addObject:@(CGPointMake(px, py))];
+                [weights addObject:@(intensity)];
+            } else {
+                [points addObject:@(CGPointMake(x, y))];
+                [weights addObject:@(intensity)];
+            }
+            
+        }
+        
+        CGRect heatMapWithRect = CGRectMake(0, 0, mapScreenWidth, mapScreenHeight);
         
         UIImage *heatmap = [LFHeatMap heatMapWithRect:heatMapWithRect
                                                 boost:boost
-                                               points:_points
-                                              weights:_weights];
+                                               points:points
+                                              weights:weights];
         [_imageView setImage:heatmap];
+        
     } else {
         [_imageView setImage:nil];
     }

@@ -7,11 +7,12 @@
 @interface HeatMapWrapper : UIView
 
 @property (strong, nonatomic) UIImageView *imageView;
-@property (strong, nonatomic) NSMutableArray *points;
-@property (strong, nonatomic) NSMutableArray *weights;
+@property (strong, nonatomic) NSDictionary *region;
+@property (strong, nonatomic) NSArray *data;
 
 - (void)shouldRenderHeatMap;
 - (void)shouldUpdateData:(NSArray*)data;
+- (void)shouldUpdateRegion:(NSDictionary*)region;
 
 @end
 
