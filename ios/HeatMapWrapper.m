@@ -9,14 +9,19 @@
     self = [super initWithFrame:frame];
     if (self) {
         
-        CGRect imageRect = CGRectMake(0, 0, 100, 100);
         
-        UIView *imageView = [[UIView alloc] initWithFrame:imageRect];
+        _imageView = [[UIView alloc] initWithFrame:frame];
         
-        [imageView setContentMode:UIViewContentModeScaleAspectFit];
-        [imageView sizeToFit];
-        [imageView setBackgroundColor:[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:1.0f]];
-        [self addSubview:imageView];
+//        UIView *view = [[UIView alloc] initWithFrame:self.view.bounds];
+        _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//        [self.view addSubview:view];
+        
+//        CGRect imageRect = CGRectMake(0, 0, 100, 100);
+//        [_imageView setContentMode:UIViewContentModeScaleAspectFit];
+//        [_imageView sizeToFit];
+        [_imageView setBackgroundColor:[UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:1.0f]];
+        [self addSubview:_imageView];
+        
 //        [imageView release];
         
         
@@ -47,13 +52,14 @@
     return self;
 }
 
+//-(void) viewWillAppear:(BOOL)animated{
+//    NSLog(@"%f",[[self view] bounds].size.width);
+//    [_imageView setBounds:[self bounds]];
+//}
 
-
-//
 //- (void)layoutSubviews {
 //    [super layoutSubviews];
-//    
-//    
+//    [_imageView setBounds:[self bounds]];
 //}
 
 @end
