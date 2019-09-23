@@ -10,20 +10,35 @@ RCT_EXPORT_MODULE()
     return _heatMapWrapper = [[HeatMapWrapper alloc] init];
 }
 
-//RCT_EXPORT_VIEW_PROPERTY(radius, CGFloat);
-//RCT_EXPORT_VIEW_PROPERTY(max, CGFloat);
-//RCT_EXPORT_VIEW_PROPERTY(minOpacity, CGFloat);
-
-RCT_CUSTOM_VIEW_PROPERTY(data, NSDictionary, HeatMapWrapper)
+RCT_CUSTOM_VIEW_PROPERTY(region, NSDictionary, HeatMapWrapper)
 {
-    
     NSDictionary *dictionary = [RCTConvert NSDictionary:json];
-    NSLog(@"%@", dictionary);
+    CGFloat latitude = [[dictionary valueForKey:@"latitude"] doubleValue];
+    CGFloat longitude = [[dictionary valueForKey:@"longitude"] doubleValue];
+    CGFloat latitudeDelta = [[dictionary valueForKey:@"latitudeDelta"] doubleValue];
+    CGFloat longitudeDelta = [[dictionary valueForKey:@"longitudeDelta"] doubleValue];
 }
-//
-//RCT_CUSTOM_VIEW_PROPERTY(gradient, NSDictionary, HeatMapWrapper)
-//{
-//    
-//}
+
+RCT_CUSTOM_VIEW_PROPERTY(data, NSMutableArray, HeatMapWrapper)
+{
+    NSArray *array = [RCTConvert NSArray:json];
+    [_heatMapWrapper shouldUpdateData:array];
+    [_heatMapWrapper shouldRenderHeatMap];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(radius, CGFloat, HeatMapWrapper)
+{
+    [_heatMapWrapper shouldRenderHeatMap];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(max, CGFloat, HeatMapWrapper)
+{
+    [_heatMapWrapper shouldRenderHeatMap];
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(minOpacity, CGFloat, HeatMapWrapper)
+{
+    [_heatMapWrapper shouldRenderHeatMap];
+}
 
 @end
