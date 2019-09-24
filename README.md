@@ -8,7 +8,7 @@ A <HeatMap /> component for React Native that can be rendered on top or undernea
   </tr>
   <tr>
     <td><img src="./bin/ios.png"/></td>
-    <td><img src="https://www.inovex.de/blog/wp-content/uploads/2018/03/react-native.png"/></td>
+    <td><img src="./bin/ios.png"/></td>
   </tr>
 </table>
 
