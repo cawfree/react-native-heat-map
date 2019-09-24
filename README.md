@@ -116,9 +116,7 @@ For performance, instead of using `setState` to update the `<HeatMap />`, you ca
 
 Check out the complete [example code](https://github.com/cawfree/react-native-heat-map/blob/master/example/App.js).
 
-
-## 📌 Props
-
+## 📌 Props
 
 Prop                  | Type     | Default                   | Required
 --------------------- | -------- | ------------------------- | --------
