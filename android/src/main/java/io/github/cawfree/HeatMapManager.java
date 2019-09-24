@@ -53,10 +53,8 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
 
   @ReactProp(name = "region")
   public final void setRegion(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
-    if (pReadableMap == null) {
-      // Remove the Region.
-      pHeatMap.setRegion(null);
-    } else {
+    // Have we been supplied with a valid Region?
+    if (oReadableMap != null && pReadableMap.hasKey("latitude") && pReadableMap.hasKey("longitude") && pReadableMap.hasKey("latitudeDelta") && pReadableMap.hasKey("longitudeDelta")) {
       pHeatMap.setRegion(
         new double[] {
           pReadableMap.getDouble("latitude"),
@@ -65,15 +63,11 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
           pReadableMap.getDouble("longitudeDelta"),
         }
       );
+    } else {
+      // Remove the Region.
+      pHeatMap.setRegion(null);
     }
   }
-
-  //@ReactProp(name = "gradient")
-  //public final void setGradient(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
-  //  if (pReadableMap == null) {
-  //    return;
-  //  }
-  //}
 
   @ReactProp(name = "data")
   public final void setData(final HeatMap pHeatMap, final ReadableArray pReadableArray) {
