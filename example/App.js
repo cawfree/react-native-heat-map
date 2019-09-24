@@ -13,8 +13,8 @@ export default class App extends Component<{}> {
     radius: 60,
     data: [
       [
-        -3.0118499, // latitude
-        53.4139281, // longitude
+        -3.0118499, // longitude
+        53.4139281, // latitude
         10, // intensity
       ],
       //[
@@ -148,8 +148,8 @@ export default class App extends Component<{}> {
           radius={radius}
           data={data} 
           region={{
-            latitude: -3.0118499, // latitude
-            longitude: 53.4139281, // longitude
+            longitude: -3.0118499, // latitude
+            latitude: 53.4139281, // longitude
             latitudeDelta: 0.2,
             longitudeDelta: 0.2,
           }}

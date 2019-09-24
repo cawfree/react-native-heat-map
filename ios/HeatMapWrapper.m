@@ -74,38 +74,34 @@
             float intensity = [[n objectAtIndex:2] doubleValue];
             
             if (_region) {
-                NSLog(@"got region");
+                float latitude = [[_region valueForKey:@"latitude"] doubleValue];
+                float longitude = [[_region valueForKey:@"longitude"] doubleValue];
+                float latitudeDelta = [[_region valueForKey:@"latitudeDelta"] doubleValue];
+                float longitudeDelta = [[_region valueForKey:@"longitudeDelta"] doubleValue];
+                float topLatitude = latitude + (latitudeDelta * 0.5f);
+                float bottomLatitude = latitude - (latitudeDelta * 0.5f);
+                float leftLongitude = longitude - (longitudeDelta * 0.5f);
+                float rightLongitude = longitude + (longitudeDelta * 0.5f);
+
+                float topLatitudeRelatve = [self getScreenYRelative:topLatitude];
+                float bottomLatitudeRelative = [self getScreenYRelative:bottomLatitude];
+                float leftLongitudeRadians = [self getRadians:leftLongitude];
+                float rightLongitudeRadians = [self getRadians:rightLongitude];
+
+                float px = [self getScreenX:x withMapScreenWidth:mapScreenWidth withRightLongitudeRadians:rightLongitudeRadians withLeftLongitudeRadians:leftLongitudeRadians];
+
+                float py = [self getScreenY:mapScreenHeight
+                      withLatitudeInDegrees:y
+                    withTopLatitudeRelative:topLatitudeRelatve withBottomLatitudeRelative:bottomLatitudeRelative];
+
+                NSLog(@"got %f, %f for %f %f", px, py, x, y);
+
+                [points addObject:@(CGPointMake(px, py))];
+                [weights addObject:@(intensity)];
             } else {
-                NSLog(@"not got region");
-            }
-            
-//            if (_region != nil) {
-//                float latitude = [[_region valueForKey:@"latitude"] doubleValue];
-//                float longitude = [[_region valueForKey:@"longitude"] doubleValue];
-//                float latitudeDelta = [[_region valueForKey:@"latitudeDelta"] doubleValue];
-//                float longitudeDelta = [[_region valueForKey:@"longitudeDelta"] doubleValue];
-//                float topLatitude = latitude + (latitudeDelta * 0.5f);
-//                float bottomLatitude = latitude - (latitudeDelta * 0.5f);
-//                float leftLongitude = longitude - (longitudeDelta * 0.5f);
-//                float rightLongitude = longitude + (longitudeDelta * 0.5f);
-//
-//                float topLatitudeRelatve = [self getScreenYRelative:topLatitude];
-//                float bottomLatitudeRelative = [self getScreenYRelative:bottomLatitude];
-//                float leftLongitudeRadians = [self getRadians:leftLongitude];
-//                float rightLongitudeRadians = [self getRadians:rightLongitude];
-//
-//                float px = [self getScreenX:longitude withMapScreenWidth:mapScreenWidth withRightLongitudeRadians:rightLongitudeRadians withLeftLongitudeRadians:leftLongitudeRadians];
-//
-//                float py = [self getScreenY:mapScreenHeight withLatitudeInDegrees:latitude withTopLatitudeRelative:topLatitudeRelatve withBottomLatitudeRelative:bottomLatitudeRelative];
-//
-//                NSLog(@"got %f, %f", px, py);
-//
-//                [points addObject:@(CGPointMake(px, py))];
-//                [weights addObject:@(intensity)];
-//            } else {
                 [points addObject:@(CGPointMake(x, y))];
                 [weights addObject:@(intensity)];
-//            }
+            }
             
         }
         
