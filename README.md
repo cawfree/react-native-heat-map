@@ -120,6 +120,13 @@ Check out the complete [example code](https://github.com/cawfree/react-native-he
 ## 📌 Props
 
 
+Prop                  | Type     | Default                   | Required
+--------------------- | -------- | ------------------------- | --------
+max|number|10|No
+data|array|[]|No
+minOpacity|number|0.05|No
+alpha|number|1.0|No
+region|shape|null|No
 
 ## ✌️ License
 [MIT](https://opensource.org/licenses/MIT)
