@@ -12,7 +12,7 @@ A <HeatMap /> component for React Native that can be rendered on top or undernea
   </tr>
 </table>
 
-The native Android solution is implemented using [simpleheat](https://github.com/mourner/simpleheat) as the development reference. On iOS, the heatmap is presented using the performant [LFHeatMap](https://github.com/gpolak/LFHeatMap) as a CocoaPods dependeny.
+The native Android solution is implemented using [simpleheat](https://github.com/mourner/simpleheat) as the development reference. On iOS, the heatmap is presented using the performant [LFHeatMap](https://github.com/gpolak/LFHeatMap) as a CocoaPods dependeny. This is **not** a `<MapView/>`; but it can be overlaid one.
 
 ## 🚀 Getting started
 
