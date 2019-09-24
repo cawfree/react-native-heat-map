@@ -7,14 +7,14 @@ A <HeatMap /> component for React Native that can be rendered on top or undernea
     <th>iOS</th>
   </tr>
   <tr>
-    <td><img src="https://www.inovex.de/blog/wp-content/uploads/2018/03/react-native.png"/></td>
+    <td><img src="./bin/ios.png"/></td>
     <td><img src="https://www.inovex.de/blog/wp-content/uploads/2018/03/react-native.png"/></td>
   </tr>
 </table>
 
 The native Android solution is implemented using [simpleheat](https://github.com/mourner/simpleheat) as the development reference. On iOS, the heatmap is presented using the performant [LFHeatMap](https://github.com/gpolak/LFHeatMap) as a CocoaPods dependeny.
 
-## Getting started
+## 🚀 Getting started
 
 Using [`npm`]():
 
@@ -28,7 +28,7 @@ Using [`yarn`]():
 yarn add react-native-heat-map
 ```
 
-### Mostly automatic installation
+### 🤖 Mostly automatic installation
 
 If you're running `react-native` at any version less than `0.60.0`, you'll need to manually link the library to your project:
 
@@ -36,7 +36,7 @@ If you're running `react-native` at any version less than `0.60.0`, you'll need 
 `$ react-native link react-native-heat-map`
 ```
 
-### Manual installation
+### 🔩 Manual installation
 
 #### iOS
 
@@ -60,7 +60,7 @@ If you're running `react-native` at any version less than `0.60.0`, you'll need 
       compile project(':react-native-heat-map')
   	```
 
-## Example
+## ✍️ Example
 
 There are two main modes the `<HeatMap/>` can operate in. You can either specify cartesian (2D) co-ordinates:
 
@@ -116,8 +116,10 @@ For performance, instead of using `setState` to update the `<HeatMap />`, you ca
 
 Check out the complete [example code](https://github.com/cawfree/react-native-heat-map/blob/master/example/App.js).
 
-## Props
+
+## 📌 Props
 
 
-## License
+
+## ✌️ License
 [MIT](https://opensource.org/licenses/MIT)
