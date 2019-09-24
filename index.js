@@ -72,7 +72,7 @@ HeatMap.defaultProps = {
     ],
   ],
   minOpacity: 0.05,
-  region: null,
+  region: {},
 };
 
 export default HeatMap;

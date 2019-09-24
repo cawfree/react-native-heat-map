@@ -35,43 +35,43 @@ export default class App extends Component<{}> {
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: ({ nativeEvent }) => {
           const { changedTouches } = nativeEvent;
-          data.push(
-            ...changedTouches
-              .map(
-                 ({ locationX, locationY }) => {
-                   return [
-                     locationX * PixelRatio.get(),
-                     locationY * PixelRatio.get(),
-                     1,
-                   ];
-                 },
-               ),
+          //data.push(
+          //  ...changedTouches
+          //    .map(
+          //       ({ locationX, locationY }) => {
+          //         return [
+          //           locationX * PixelRatio.get(),
+          //           locationY * PixelRatio.get(),
+          //           1,
+          //         ];
+          //       },
+          //     ),
    
-          );
-          this.refs.heatMap
-            .setNativeProps(
-              {
-                data: [...data],
-                radius: 60 * PixelRatio.get(),
-              },
-            );
-          //this.setState(
-          //  {
-          //    data: [
-          //      ...this.state.data,
-          //      ...changedTouches
-          //      .map(
-          //        ({ locationX, locationY }) => {
-          //          return [
-          //            locationX,
-          //            locationY,
-          //            1,
-          //          ];
-          //        },
-          //      ),
-          //    ],
-          //  },
           //);
+          //this.refs.heatMap
+          //  .setNativeProps(
+          //    {
+          //      data: [...data],
+          //      radius: 60 * PixelRatio.get(),
+          //    },
+          //  );
+          this.setState(
+            {
+              data: [
+                ...this.state.data,
+                ...changedTouches
+                .map(
+                  ({ locationX, locationY }) => {
+                    return [
+                      locationX,
+                      locationY,
+                      1,
+                    ];
+                  },
+                ),
+              ],
+            },
+          );
         },
         onPanResponderRelease: () => this.setState({
           data: [],
@@ -148,10 +148,10 @@ export default class App extends Component<{}> {
           radius={radius}
           data={data} 
           region={{
-            longitude: -3.0118499,
-            latitude: 53.4139281,
-            latitudeDelta: 0.02,
-            longitudeDelta: 0.02,
+            latitude: -3.0118499, // latitude
+            longitude: 53.4139281, // longitude
+            latitudeDelta: 0.2,
+            longitudeDelta: 0.2,
           }}
         />
       </View>

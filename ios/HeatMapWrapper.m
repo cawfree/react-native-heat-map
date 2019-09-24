@@ -11,6 +11,7 @@
         _imageView = [[UIImageView alloc] initWithFrame:frame];
         
         _imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _region = nil;
         
         [self addSubview:_imageView];
     }
@@ -19,6 +20,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    _imageView.bounds = self.bounds;
     [self shouldRenderHeatMap];
 }
 
@@ -59,7 +61,6 @@
     float mapScreenHeight = _imageView.bounds.size.height;
     
     if (mapScreenWidth > 0 && mapScreenHeight > 0 && _data != nil) {
-        
         NSUInteger count = [_data count];
         NSMutableArray* points = [NSMutableArray arrayWithCapacity:count];
         NSMutableArray* weights = [NSMutableArray arrayWithCapacity:count];
@@ -72,33 +73,39 @@
             float y = [[n objectAtIndex:1] doubleValue];
             float intensity = [[n objectAtIndex:2] doubleValue];
             
-            if (_region != nil) {
-                float latitude = [[_region valueForKey:@"latitude"] doubleValue];
-                float longitude = [[_region valueForKey:@"longitude"] doubleValue];
-                float latitudeDelta = [[_region valueForKey:@"latitudeDelta"] doubleValue];
-                float longitudeDelta = [[_region valueForKey:@"longitudeDelta"] doubleValue];
-                float topLatitude = latitude + (latitudeDelta * 0.5f);
-                float bottomLatitude = latitude - (latitudeDelta * 0.5f);
-                float leftLongitude = longitude - (longitudeDelta * 0.5f);
-                float rightLongitude = longitude + (longitudeDelta * 0.5f);
-                
-                float topLatitudeRelatve = [self getScreenYRelative:topLatitude];
-                float bottomLatitudeRelative = [self getScreenYRelative:bottomLatitude];
-                float leftLongitudeRadians = [self getRadians:leftLongitude];
-                float rightLongitudeRadians = [self getRadians:rightLongitude];
-                
-                float px = [self getScreenX:longitude withMapScreenWidth:mapScreenWidth withRightLongitudeRadians:rightLongitudeRadians withLeftLongitudeRadians:leftLongitudeRadians];
-                
-                float py = [self getScreenY:mapScreenHeight withLatitudeInDegrees:latitude withTopLatitudeRelative:topLatitudeRelatve withBottomLatitudeRelative:bottomLatitudeRelative];
-                
-                NSLog(@"got %f, %f", px, py);
-                
-                [points addObject:@(CGPointMake(px, py))];
-                [weights addObject:@(intensity)];
+            if (_region) {
+                NSLog(@"got region");
             } else {
+                NSLog(@"not got region");
+            }
+            
+//            if (_region != nil) {
+//                float latitude = [[_region valueForKey:@"latitude"] doubleValue];
+//                float longitude = [[_region valueForKey:@"longitude"] doubleValue];
+//                float latitudeDelta = [[_region valueForKey:@"latitudeDelta"] doubleValue];
+//                float longitudeDelta = [[_region valueForKey:@"longitudeDelta"] doubleValue];
+//                float topLatitude = latitude + (latitudeDelta * 0.5f);
+//                float bottomLatitude = latitude - (latitudeDelta * 0.5f);
+//                float leftLongitude = longitude - (longitudeDelta * 0.5f);
+//                float rightLongitude = longitude + (longitudeDelta * 0.5f);
+//
+//                float topLatitudeRelatve = [self getScreenYRelative:topLatitude];
+//                float bottomLatitudeRelative = [self getScreenYRelative:bottomLatitude];
+//                float leftLongitudeRadians = [self getRadians:leftLongitude];
+//                float rightLongitudeRadians = [self getRadians:rightLongitude];
+//
+//                float px = [self getScreenX:longitude withMapScreenWidth:mapScreenWidth withRightLongitudeRadians:rightLongitudeRadians withLeftLongitudeRadians:leftLongitudeRadians];
+//
+//                float py = [self getScreenY:mapScreenHeight withLatitudeInDegrees:latitude withTopLatitudeRelative:topLatitudeRelatve withBottomLatitudeRelative:bottomLatitudeRelative];
+//
+//                NSLog(@"got %f, %f", px, py);
+//
+//                [points addObject:@(CGPointMake(px, py))];
+//                [weights addObject:@(intensity)];
+//            } else {
                 [points addObject:@(CGPointMake(x, y))];
                 [weights addObject:@(intensity)];
-            }
+//            }
             
         }
         
@@ -111,6 +118,7 @@
         [_imageView setImage:heatmap];
         
     } else {
+        NSLog(@"cannot render");
         [_imageView setImage:nil];
     }
     
