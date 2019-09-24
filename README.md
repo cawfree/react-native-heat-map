@@ -7,7 +7,7 @@ A <HeatMap /> component for React Native that can be rendered on top or undernea
     <th>iOS</th>
   </tr>
   <tr>
-    <td><img style="width:828;height:1792" src="./bin/android.jpg"/></td>
+    <td><img src="./bin/android.jpg"/></td>
     <td><img src="./bin/ios.png"/></td>
   </tr>
 </table>
