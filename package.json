@@ -1,6 +1,5 @@
 {
   "name": "react-native-heat-map",
-  "title": "React Native Heat Map",
   "version": "0.0.1",
   "description": "A <HeatMap /> Native Module component for React Native.",
   "main": "index.js",
@@ -13,7 +12,13 @@
     "baseUrl": "https://github.com/cawfree/react-native-heat-map"
   },
   "keywords": [
-    "react-native"
+    "react-native",
+    "react",
+    "heat",
+    "heatmap",
+    "map",
+    "graph",
+    "intensity"
   ],
   "author": {
     "name": "Alex Thomas (@cawfree)",

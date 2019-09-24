@@ -1,15 +1,42 @@
 # react-native-heat-map
+A <HeatMap /> component for React Native that can be rendered on top or underneath your `<View/>`s with transparency. If you don't feel like using a native library, you might be  interested in [react-native-simpleheat](https://github.com/cawfree/react-native-simpleheat).
+
+<table style="width:100%">
+  <tr>
+    <th>Android</th>
+    <th>iOS</th>
+  </tr>
+  <tr>
+    <td><img src="https://www.inovex.de/blog/wp-content/uploads/2018/03/react-native.png"/></td>
+    <td><img src="https://www.inovex.de/blog/wp-content/uploads/2018/03/react-native.png"/></td>
+  </tr>
+</table>
+
+The native Android solution is implemented using [simpleheat](https://github.com/mourner/simpleheat) as the development reference. On iOS, the heatmap is presented using the performant [LFHeatMap](https://github.com/gpolak/LFHeatMap) as a CocoaPods dependeny.
 
 ## Getting started
 
+Using [`npm`]():
+
+```sh
 `$ npm install react-native-heat-map --save`
+```
+
+Using [`yarn`]():
+
+```sh
+yarn add react-native-heat-map
+```
 
 ### Mostly automatic installation
 
+If you're running `react-native` at any version less than `0.60.0`, you'll need to manually link the library to your project:
+
+```sh
 `$ react-native link react-native-heat-map`
+```
 
 ### Manual installation
-
 
 #### iOS
 
@@ -33,11 +60,64 @@
       compile project(':react-native-heat-map')
   	```
 
+## Example
 
-## Usage
+There are two main modes the `<HeatMap/>` can operate in. You can either specify cartesian (2D) co-ordinates:
+
 ```javascript
 import HeatMap from 'react-native-heat-map';
 
-// TODO: What to do with the module?
-HeatMap;
+export default () => (
+  <HeatMap
+    pointerEvents="box-only"
+    style={{
+      flex: 1,
+    }}
+    data={[
+      [
+        100, // x
+        100, // y
+        20   // intensity
+      ],
+    ]}
+  />
+);
 ```
+
+Alternatively, you can pass a [react-native-maps](https://github.com/react-native-community/react-native-maps)-compatible `region` prop to process your data through a [Web Mercator Projection](https://en.wikipedia.org/wiki/Web_Mercator_projection):
+
+```javascript
+import HeatMap from 'react-native-heat-map';
+
+export default () => (
+  <HeatMap
+    pointerEvents="box-only"
+    style={{
+      flex: 1,
+    }}
+    data={[
+      [
+        -3.0118499, // longitude
+        53.4139281, // latitude
+        20   // intensity
+      ],
+    ]}
+    region={{
+      longitude: -3.0118499,
+      latitude: 53.4139281,
+      latitudeDelta: 0.2,
+      longitudeDelta: 0.2,
+    }}
+  />
+);
+```
+
+For performance, instead of using `setState` to update the `<HeatMap />`, you can choose to [`setNativeProps`](https://facebook.github.io/react-native/docs/direct-manipulation) directly.
+
+Check out the complete [example code](https://github.com/cawfree/react-native-heat-map/blob/master/example/App.js).
+
+## Props
+
+
+## License
+[MIT](https://opensource.org/licenses/MIT)
