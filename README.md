@@ -7,7 +7,7 @@ A <HeatMap /> component for React Native that can be rendered on top or undernea
     <th>iOS</th>
   </tr>
   <tr>
-    <td><img src="./bin/ios.png"/></td>
+    <td><img src="./bin/android.jpg"/></td>
     <td><img src="./bin/ios.png"/></td>
   </tr>
 </table>
@@ -19,7 +19,7 @@ The native Android solution is implemented using [simpleheat](https://github.com
 Using [`npm`]():
 
 ```sh
-`$ npm install react-native-heat-map --save`
+$ npm install react-native-heat-map --save
 ```
 
 Using [`yarn`]():
@@ -33,7 +33,7 @@ yarn add react-native-heat-map
 If you're running `react-native` at any version less than `0.60.0`, you'll need to manually link the library to your project:
 
 ```sh
-`$ react-native link react-native-heat-map`
+$ react-native link react-native-heat-map
 ```
 
 ### 🔩 Manual installation
