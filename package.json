@@ -1,5 +1,5 @@
 {
-  "name": "react-native-heat-map",
+  "name": "@cawfree/react-native-heat-map",
   "version": "0.0.1",
   "description": "A <HeatMap /> Native Module component for React Native.",
   "main": "index.js",

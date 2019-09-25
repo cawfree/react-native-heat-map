@@ -19,13 +19,13 @@ The native Android solution is implemented using [simpleheat](https://github.com
 Using [`npm`]():
 
 ```sh
-$ npm install react-native-heat-map --save
+$ npm install @cawfree/react-native-heat-map --save
 ```
 
 Using [`yarn`]():
 
 ```sh
-yarn add react-native-heat-map
+yarn add @cawfree/react-native-heat-map
 ```
 
 ### 🤖 Mostly automatic installation
