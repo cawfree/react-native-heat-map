@@ -54,7 +54,7 @@ public class HeatMapManager extends SimpleViewManager<HeatMap> {
   @ReactProp(name = "region")
   public final void setRegion(final HeatMap pHeatMap, final ReadableMap pReadableMap) {
     // Have we been supplied with a valid Region?
-    if (oReadableMap != null && pReadableMap.hasKey("latitude") && pReadableMap.hasKey("longitude") && pReadableMap.hasKey("latitudeDelta") && pReadableMap.hasKey("longitudeDelta")) {
+    if (pReadableMap != null && pReadableMap.hasKey("latitude") && pReadableMap.hasKey("longitude") && pReadableMap.hasKey("latitudeDelta") && pReadableMap.hasKey("longitudeDelta")) {
       pHeatMap.setRegion(
         new double[] {
           pReadableMap.getDouble("latitude"),
